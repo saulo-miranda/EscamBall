@@ -25,4 +25,11 @@ public class Time {
     public boolean adicionarJogador(String nome, int idade, List<String> posicoes, long preco, int ataque, int defesa, int fisico){
          return Elenco.add(new Jogador(nome, idade, posicoes, preco, ataque, defesa, fisico));
     }
+
+    public boolean removerJogador(Jogador jogador){
+        return Elenco.remove(jogador);
+    }
+    public List<Jogador> buscarJogadorMeuTime(String nome){
+        return Elenco.stream().filter(x -> x.getNome() == nome).toList();
+    }
 }
