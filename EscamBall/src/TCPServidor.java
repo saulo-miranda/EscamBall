@@ -9,23 +9,23 @@ public class TCPServidor {
     private int contador;
 
 
-    public TCPServidor(ServerSocket listenSocket, int serverPort, int contador) {
-        this.listenSocket = listenSocket;
-        this.clientSocket = null;
-        this.serverPort = serverPort;
-        this.contador = contador;
-    }
-
-    public int getContador() {
-        return contador;
-    }
-
-    public int getServerPort() {
-        return serverPort;
+    public TCPServidor() {
+        try {
+            this.serverPort = 7896;
+            this.contador = 1;
+            this.listenSocket = new ServerSocket(serverPort);
+            this.clientSocket = null;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public ServerSocket getListenSocket() {
         return listenSocket;
+    }
+
+    public void setListenSocket(ServerSocket listenSocket) {
+        this.listenSocket = listenSocket;
     }
 
     public Socket getClientSocket() {
@@ -36,16 +36,20 @@ public class TCPServidor {
         this.clientSocket = clientSocket;
     }
 
-    public void setContador(int contador) {
-        this.contador = contador;
-    }
-
-    public void setListenSocket(ServerSocket listenSocket) {
-        this.listenSocket = listenSocket;
+    public int getServerPort() {
+        return serverPort;
     }
 
     public void setServerPort(int serverPort) {
         this.serverPort = serverPort;
+    }
+
+    public int getContador() {
+        return contador;
+    }
+
+    public void setContador(int contador) {
+        this.contador = contador;
     }
 
     public void comunicacao(){
