@@ -2,6 +2,7 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
+import java.util.ArrayList;
 
 public class Connection extends Thread{
     private DataInputStream in;
@@ -52,9 +53,27 @@ public class Connection extends Thread{
 
     @Override
     public void run(){
+        /*
+        * Fazer a escrita e leitura binária por protocolo TCP
+        * */
         try {
             String data = in.readUTF();
             System.out.println("O cliente "+contador+" chegou! Ele disse "+data);
+
+            ArrayList<Object> time = Empacotamento.desserializacao("dados.dat");
+
+            int i = 1;
+            for (Object item: time) {
+                System.out.printf("Time número....: %d.\n", i++);
+
+                System.out.printf("Nome.........: %s\n", ((Time)item).getNome());
+                int j = 1;
+                for(Object jogador: ((Time)item).getElenco()){
+                    System.out.printf("Jogador número....: %d.\n", j++);
+
+                    System.out.printf("Nome Jogador.........: %s\n", ((Jogador)jogador).getNome());
+                }
+            }
             out.writeUTF("PONG");
             System.out.println("Eu respondi PONG!");
         } catch (IOException e) {

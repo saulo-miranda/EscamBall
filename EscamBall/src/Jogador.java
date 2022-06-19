@@ -1,6 +1,7 @@
+import java.io.Serializable;
 import java.util.List;
 
-public class Jogador {
+public class Jogador implements Serializable {
     private String Nome;
     private int Idade;
     private List<String> Posicoes;

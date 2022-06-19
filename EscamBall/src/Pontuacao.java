@@ -1,4 +1,6 @@
-public class Pontuacao {
+import java.io.Serializable;
+
+public class Pontuacao implements Serializable {
     private int Geral;
     private int Ataque;
     private int Defesa;

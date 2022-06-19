@@ -1,8 +1,9 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.io.Serializable;
 
-public class Time {
+public class Time implements Serializable{
     private String Nome;
     private final List<Jogador> Elenco;
 

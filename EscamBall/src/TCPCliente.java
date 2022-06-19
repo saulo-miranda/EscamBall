@@ -2,7 +2,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class TCPCliente {
     private Socket socket;
@@ -56,8 +57,18 @@ public class TCPCliente {
 
     public void comunicacao(){
         try {
-            System.out.println("Eu sou um cliente!");
-            System.out.println("PING...");
+            System.out.println("Time");
+
+            Pontuacao pontos = new Pontuacao(1,2,1);
+            List<String> posicoes = new ArrayList<String>();
+            posicoes.add("Meia");
+            posicoes.add("Técnico");
+            Time newTime = new Time("Cruzeiro");
+            newTime.adicionarJogador("Thiago Neves", 34, posicoes, 210, pontos);
+            ArrayList<Object> times = new ArrayList<>();
+            times.add(newTime);
+            Empacotamento.serializacao(times, "dados.dat");
+
             out.writeUTF("PING!");
             String data = in.readUTF();
             System.out.println(data);
