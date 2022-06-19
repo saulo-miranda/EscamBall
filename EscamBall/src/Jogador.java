@@ -5,15 +5,15 @@ public class Jogador {
     private int Idade;
     private List<String> Posicoes;
     private long Preco;
-    private Pontuacao Pontos;
+    private final Pontuacao Pontos;
     private String foto; // AINDA PRECISAMOS DECIDIR COMO SERÁ TRATADA A FOTO DO JOGADOR
 
-    public Jogador(String nome, int idade, List<String> posicoes, long preco, int ataque, int defesa, int fisico) {
+    public Jogador(String nome, int idade, List<String> posicoes, long preco, Pontuacao pontos) {
         Nome = nome;
         Idade = idade;
         Posicoes = posicoes;
         Preco = preco;
-        Pontos = new Pontuacao(ataque, defesa, fisico);
+        Pontos = pontos;
     }
     //GET
     public String getNome() {
