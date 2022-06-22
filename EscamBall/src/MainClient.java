@@ -11,6 +11,6 @@ public class MainClient {
         nomeTime = scanner.next();
 
         TCPCliente client = new TCPCliente();
-        client.ComunicacaoTimeTCP(new Time(nomeTime));
+        client.ComunicacaoTimeTCP(new Time(nomeTime, "John Texte", "teste123", "testesenha"));
     }
 }

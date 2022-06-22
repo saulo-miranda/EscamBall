@@ -41,7 +41,7 @@ public class TCPCliente {
         }
     }
     public Time testeNovoTime(){
-        return new Time("Teste FC");
+        return new Time("Teste FC", "John Texte", "teste123", "testesenha");
     }
 
     public Socket getClient() {
