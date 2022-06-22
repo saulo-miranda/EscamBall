@@ -1,34 +1,55 @@
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
 
 public class TCPCliente {
-    private Socket socket;
+    private Socket client;
     private int serverPort;
-    private DataInputStream in;
-    private DataOutputStream out;
+    private ObjectOutputStream out;
+    private ObjectInputStream in;
 
     public TCPCliente(){
         try{
             this.serverPort = 7896;
-            this.socket = new Socket("127.0.0.1",serverPort);
-            this.in = new DataInputStream(socket.getInputStream());
-            this.out = new DataOutputStream(socket.getOutputStream());
+            this.client = new Socket("127.0.0.1",serverPort);
+            this.in = new ObjectInputStream(client.getInputStream());
+            this.out = new ObjectOutputStream(client.getOutputStream());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+    public void ComunicacaoTimeTCP(Time time) throws IOException {
+        try{
+            System.out.printf("Estou enviando o time: %s\n", time.getNome());
+            out.writeObject(time);
+            out.flush();
 
+            System.out.println("Enviado");
+
+            Time timeRecebido = (Time) in.readObject();
+            System.out.printf("Recebi o time: %s\n", timeRecebido.getNome());
+
+            System.out.println("End Client");
+
+        } catch (IOException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } finally {
+            out.close();
+            in.close();
+            client.close();
+        }
+    }
+    public Time testeNovoTime(){
+        return new Time("Teste FC");
     }
 
-    public Socket getSocket() {
-        return socket;
+    public Socket getClient() {
+        return client;
     }
 
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    public void setClient(Socket client) {
+        this.client = client;
     }
 
     public int getServerPort() {
@@ -39,47 +60,19 @@ public class TCPCliente {
         this.serverPort = serverPort;
     }
 
-    public DataInputStream getIn() {
-        return in;
-    }
-
-    public void setIn(DataInputStream in) {
-        this.in = in;
-    }
-
-    public DataOutputStream getOut() {
+    public ObjectOutputStream getOut() {
         return out;
     }
 
-    public void setOut(DataOutputStream out) {
+    public void setOut(ObjectOutputStream out) {
         this.out = out;
     }
 
-    public void comunicacao(){
-        try {
-            System.out.println("Time");
-
-            Pontuacao pontos = new Pontuacao(1,2,1);
-            List<String> posicoes = new ArrayList<String>();
-            posicoes.add("Meia");
-            posicoes.add("Técnico");
-            Time newTime = new Time("Cruzeiro");
-            newTime.adicionarJogador("Thiago Neves", 34, posicoes, 210, pontos);
-            ArrayList<Object> times = new ArrayList<>();
-            times.add(newTime);
-            Empacotamento.serializacao(times, "dados.dat");
-
-            out.writeUTF("PING!");
-            String data = in.readUTF();
-            System.out.println(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } finally {
-            if(socket!=null)
-                try {
-                    socket.close();
-                } catch (IOException ignored) {}
-        }
+    public ObjectInputStream getIn() {
+        return in;
     }
 
+    public void setIn(ObjectInputStream in) {
+        this.in = in;
+    }
 }
