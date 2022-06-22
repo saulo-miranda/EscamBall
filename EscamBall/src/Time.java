@@ -7,11 +7,31 @@ public class Time implements Serializable{
     private String Nome;
     private final List<Jogador> Elenco;
 
-    public Time(String nome){
+    private String NomeDono;
+    private String Login;
+    private String Senha;
+
+    public Time(String nome, String nomeDono, String login, String senha){
         this.Nome = nome;
         this.Elenco = new ArrayList<>();
+        NomeDono = nomeDono;
+        Login = login;
+        Senha = senha;
     }
     //GET
+
+    public String getNomeDono() {
+        return NomeDono;
+    }
+
+    public String getLogin() {
+        return Login;
+    }
+
+    public String getSenha() {
+        return Senha;
+    }
+
     public String getNome() {
         return Nome;
     }
@@ -24,7 +44,7 @@ public class Time implements Serializable{
         Nome = nome;
     }
 
-    public boolean adicionarJogador(String nome, int idade, List<String> posicoes, long preco, Pontuacao pontos){
+    public boolean adicionarJogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos){
          return Elenco.add(new Jogador(nome, idade, posicoes, preco,pontos));
     }
 

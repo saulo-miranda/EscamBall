@@ -2,14 +2,15 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Jogador implements Serializable {
+    private String IdJogador;
     private String Nome;
     private int Idade;
-    private List<String> Posicoes;
+    private Posicao Posicoes;
     private long Preco;
     private final Pontuacao Pontos;
     private String foto; // AINDA PRECISAMOS DECIDIR COMO SERÁ TRATADA A FOTO DO JOGADOR
 
-    public Jogador(String nome, int idade, List<String> posicoes, long preco, Pontuacao pontos) {
+    public Jogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos) {
         Nome = nome;
         Idade = idade;
         Posicoes = posicoes;
@@ -17,6 +18,9 @@ public class Jogador implements Serializable {
         Pontos = pontos;
     }
     //GET
+    public String getId() {
+        return IdJogador;
+    }
     public String getNome() {
         return Nome;
     }
@@ -25,7 +29,7 @@ public class Jogador implements Serializable {
         return Idade;
     }
 
-    public List<String> getPosicoes() {
+    public Posicao getPosicoes() {
         return Posicoes;
     }
 
@@ -37,7 +41,9 @@ public class Jogador implements Serializable {
         return Pontos;
     }
     //SET
-
+    public void setId(String id) {
+        IdJogador = id;
+    }
     public void setNome(String nome) {
         Nome = nome;
     }
@@ -46,7 +52,7 @@ public class Jogador implements Serializable {
         Idade = idade;
     }
 
-    public void setPosicoes(List<String> posicoes) {
+    public void setPosicoes(Posicao posicoes) {
         Posicoes = posicoes;
     }
 

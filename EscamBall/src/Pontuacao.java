@@ -1,6 +1,7 @@
 import java.io.Serializable;
 
 public class Pontuacao implements Serializable {
+    private long IdPontuacao;
     private int Geral;
     private int Ataque;
     private int Defesa;
@@ -13,6 +14,11 @@ public class Pontuacao implements Serializable {
         setGeral();
     }
     //Get
+
+    public long getIdPontuacao() {
+        return IdPontuacao;
+    }
+
     public int getGeral() {
         return Geral;
     }
@@ -29,6 +35,11 @@ public class Pontuacao implements Serializable {
         return Fisico;
     }
     //Set
+
+    public void setIdPontuacao(long idPontuacao) {
+        IdPontuacao = idPontuacao;
+    }
+
     public void setGeral() {
         Geral = (Ataque + Defesa + Fisico)/3;
     }

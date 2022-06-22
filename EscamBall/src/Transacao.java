@@ -3,12 +3,12 @@ import java.util.List;
 public class Transacao {
     private String Criador;
     private String Receptor;
-    private List<Jogador> GrupoCriador;
-    private List<Jogador> GrupoReceptor;
+    private Jogador GrupoCriador;
+    private Jogador GrupoReceptor;
     private boolean Contraproposta;
     private boolean Finalizada;
 
-    public Transacao(String criador, String receptor, List<Jogador> grupoCriador, List<Jogador> grupoReceptor) {
+    public Transacao(String criador, String receptor, Jogador grupoCriador, Jogador grupoReceptor) {
         Criador = criador;
         Receptor = receptor;
         GrupoCriador = grupoCriador;
@@ -25,11 +25,11 @@ public class Transacao {
         return Receptor;
     }
 
-    public List<Jogador> getGrupoCriador() {
+    public Jogador getGrupoCriador() {
         return GrupoCriador;
     }
 
-    public List<Jogador> getGrupoReceptor() {
+    public Jogador getGrupoReceptor() {
         return GrupoReceptor;
     }
 
@@ -41,11 +41,11 @@ public class Transacao {
         return Finalizada;
     }
     //SET
-    public void setGrupoCriador(List<Jogador> grupoCriador) {
+    public void setGrupoCriador(Jogador grupoCriador) {
         GrupoCriador = grupoCriador;
     }
 
-    public void setGrupoReceptor(List<Jogador> grupoReceptor) {
+    public void setGrupoReceptor(Jogador grupoReceptor) {
         GrupoReceptor = grupoReceptor;
     }
 
