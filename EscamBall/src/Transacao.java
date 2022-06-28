@@ -1,14 +1,15 @@
 import java.util.List;
 
 public class Transacao {
-    private String Criador;
-    private String Receptor;
+    private int IdTransacao;
+    private int Criador;
+    private int Receptor;
     private Jogador GrupoCriador;
     private Jogador GrupoReceptor;
     private boolean Contraproposta;
     private boolean Finalizada;
 
-    public Transacao(String criador, String receptor, Jogador grupoCriador, Jogador grupoReceptor) {
+    public Transacao(int criador, int receptor, Jogador grupoCriador, Jogador grupoReceptor) {
         Criador = criador;
         Receptor = receptor;
         GrupoCriador = grupoCriador;
@@ -17,11 +18,11 @@ public class Transacao {
         Finalizada = false;
     }
     //GET
-    public String getCriador() {
+    public int getCriador() {
         return Criador;
     }
 
-    public String getReceptor() {
+    public int getReceptor() {
         return Receptor;
     }
 
@@ -40,6 +41,11 @@ public class Transacao {
     public boolean isFinalizada() {
         return Finalizada;
     }
+
+    public int getIdTransacao() {
+        return IdTransacao;
+    }
+
     //SET
     public void setGrupoCriador(Jogador grupoCriador) {
         GrupoCriador = grupoCriador;
@@ -49,11 +55,19 @@ public class Transacao {
         GrupoReceptor = grupoReceptor;
     }
 
-    public void fazerContraproposta() {
-        Contraproposta = true;
+    public void setIdTransacao(int idTransacao) {
+        IdTransacao = idTransacao;
     }
 
-    public void finalizar() {
-        Finalizada = true;
+    public void setCriador(int criador) {
+        Criador = criador;
+    }
+
+    public void setReceptor(int receptor) {
+        Receptor = receptor;
+    }
+
+    public void setFinalizada(boolean finalizada) {
+        Finalizada = finalizada;
     }
 }

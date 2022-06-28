@@ -2,25 +2,25 @@ import java.io.Serializable;
 import java.util.List;
 
 public class Jogador implements Serializable {
-    private String IdJogador;
+    private int IdJogador;
+    private int idTime;
     private String Nome;
     private int Idade;
     private Posicao Posicoes;
     private long Preco;
     private final Pontuacao Pontos;
     private String foto; // AINDA PRECISAMOS DECIDIR COMO SERÁ TRATADA A FOTO DO JOGADOR
+    private int IdTime;
 
-    public Jogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos) {
+    public Jogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos, int time) {
         Nome = nome;
         Idade = idade;
         Posicoes = posicoes;
         Preco = preco;
         Pontos = pontos;
+        IdTime = time;
     }
     //GET
-    public String getId() {
-        return IdJogador;
-    }
     public String getNome() {
         return Nome;
     }
@@ -40,10 +40,16 @@ public class Jogador implements Serializable {
     public Pontuacao getPontos() {
         return Pontos;
     }
-    //SET
-    public void setId(String id) {
-        IdJogador = id;
+
+    public int getIdJogador() {
+        return IdJogador;
     }
+
+    public int getIdTime() {
+        return IdTime;
+    }
+
+    //SET
     public void setNome(String nome) {
         Nome = nome;
     }
@@ -70,5 +76,19 @@ public class Jogador implements Serializable {
 
     public void setPontosFisico(int fisico) {
         Pontos.setFisico(fisico);
+    }
+
+    public void setIdJogador(int idJogador) {
+        IdJogador = idJogador;
+    }
+
+    public void setIdTime(int idTime) {
+        IdTime = idTime;
+    }
+
+    public void resumo(){
+        System.out.println("RESUMO ----");
+        System.out.println(this.Nome);
+        System.out.println(this.Pontos.getGeral());
     }
 }

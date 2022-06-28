@@ -8,11 +8,12 @@ import java.util.Objects;
 import java.io.Serializable;
 
 public class Time implements Serializable{
+    private int IdTime;
     private String NomeDono;
     private String NomeTime;
     private String Login;
     private String Senha;
-    private final List<Jogador> Elenco;
+    private List<Jogador> Elenco;
 
     public Time(String nomeDono, String nomeTime, String login, String senha) throws NoSuchAlgorithmException {
         this.NomeTime = nomeTime;
@@ -68,8 +69,8 @@ public class Time implements Serializable{
         return Elenco;
     }
 
-    public boolean adicionarJogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos){
-         return Elenco.add(new Jogador(nome, idade, posicoes, preco,pontos));
+    public boolean adicionarJogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos, int idTime){
+         return Elenco.add(new Jogador(nome, idade, posicoes, preco,pontos, idTime));
     }
 
     public boolean removerJogador(Jogador jogador){
@@ -77,5 +78,16 @@ public class Time implements Serializable{
     }
     public List<Jogador> buscarJogadorMeuTime(String nome){
         return Elenco.stream().filter(x -> Objects.equals(x.getNome(), nome)).toList();
+    }
+
+    public int getIdTime() {
+        return IdTime;
+    }
+
+    public void setIdTime(int idTime) {
+        IdTime = idTime;
+    }
+    public void carregarElenco(List<Jogador> lista){
+        this.Elenco = lista;
     }
 }
