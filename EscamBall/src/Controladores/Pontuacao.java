@@ -1,3 +1,5 @@
+package Controladores;
+
 import java.io.Serializable;
 
 public class Pontuacao implements Serializable {

@@ -1,17 +1,16 @@
-import javax.swing.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.io.Console;
+import Comunicacao.TCPCliente;
+import Visao.EscamballAppGUI;
+
 import java.io.IOException;
-import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Scanner;
 
 public class MainClient {
     public static void main(String[] args) throws IOException, NoSuchAlgorithmException {
-        Cadastro cadastro = new Cadastro();
-        TCPCliente client = new TCPCliente();
-        client.ComunicacaoTimeTCP(cadastro.getCadastroInicial());
+        //Controladores.Cadastro cadastro = new Controladores.Cadastro();
+        //TCPCliente client = new TCPCliente();
+        //client.ComunicacaoTimeTCP(cadastro.getCadastroInicial());
+        EscamballAppGUI escamballAppGUI = new EscamballAppGUI();
+        escamballAppGUI.setSize(800,600);
+        escamballAppGUI.setVisible(true);
     }
 }

@@ -1,3 +1,5 @@
+package Controladores;
+
 public class Posicao {
 
     private int IdPosicao;

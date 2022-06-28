@@ -1,3 +1,5 @@
+package Controladores;
+
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.sql.Connection;
@@ -40,9 +42,9 @@ public class Persistencia {
 
             String sql_time = "CREATE TABLE IF NOT EXISTS Time " +
                     "(ID_TIME INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " nome_time TEXT NOT NULL UNIQUE," +
+                    " nome_time TEXT NOT NULL," +
                     " nome_dono TEXT NOT NULL," +
-                    " login TEXT NOT NULL," +
+                    " login TEXT NOT NULL UNIQUE," +
                     " senha TEXT NOT NULL)";
 
             String sql_posicao = "CREATE TABLE IF NOT EXISTS Posicao " +

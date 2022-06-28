@@ -1,7 +1,10 @@
+package Comunicacao;
+
 import java.io.*;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import Controladores.*;
 
 public class TCPCliente {
     private Socket client;
@@ -73,5 +76,27 @@ public class TCPCliente {
 
     public void setIn(ObjectInputStream in) {
         this.in = in;
+    }
+    public Time ComunicacaoLogin(Login login) throws IOException {
+        try {
+            System.out.printf("Estou enviando o cliente "+login.getLogin()+"\n");
+            out.writeObject(login);
+            out.flush();
+
+            System.out.println("Enviado");
+
+            Time recebido = (Time) in.readObject();
+            return recebido;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            out.close();
+            in.close();
+            client.close();
+        }
     }
 }
