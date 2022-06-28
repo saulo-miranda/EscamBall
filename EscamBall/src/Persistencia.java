@@ -1,18 +1,29 @@
 import java.sql.*;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Persistencia {
     private Connection conexaoBD;
     private Statement stmt;
 
+    private String BD;
+
     public Persistencia(String bd){
+        BD = bd;
+        this.conectar();
+    }
+    private void conectar(){
         try {
-            String url = "jdbc:sqlite:./"+bd;
+            String url = "jdbc:sqlite:./"+BD;
             conexaoBD = DriverManager.getConnection(url);
-            System.out.println("Conexao com banco de dados " + bd + " estabelecida.");
+            System.out.println("Conexao com banco de dados " + BD + " estabelecida.");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
+    }
+    private void fechar() throws SQLException {
+        conexaoBD.close();
     }
 
     public void criarTabela(){
@@ -37,19 +48,13 @@ public class Persistencia {
                     "(ID_POSICAO INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " goleiro INTEGER," +
                     " zagueiro INTEGER," +
-                    " lateral_esquerdo INTEGER," +
-                    " lateral_direito INTEGER," +
-                    " volante INTEGER," +
                     " meio_campo INTEGER," +
-                    " ponta_esquerda INTEGER," +
-                    " ponta_direita INTEGER," +
                     " atacante INTEGER)";
 
             String sql_jogador = "CREATE TABLE IF NOT EXISTS Jogador " +
                     "(ID_JOGADOR INTEGER PRIMARY KEY AUTOINCREMENT," +
                     " ID_TIME INTEGER NOT NULL, " +
-                    " nome TEXT NOT NULL, " +
-                    " nome TEXT NOT NULL, " +
+                    " nome TEXT, " +
                     " idade INTEGER NOT NULL," +
                     " preco INTEGER NOT NULL, " +
                     " ID_PONTUACAO INTEGER NOT NULL, " +
@@ -62,14 +67,14 @@ public class Persistencia {
 
             String sql_transacao = "CREATE TABLE IF NOT EXISTS Transacao " +
                     "(ID_TRANSACAO INTEGER PRIMARY KEY AUTOINCREMENT," +
-                    " CRIADOR TEXT NOT NULL, " +
-                    " RECEPTOR TEXT NOT NULL, " +
+                    " ID_CRIADOR  INTEGER NOT NULL, " +
+                    " ID_RECEPTOR INTEGER NOT NULL, " +
                     " GRUPO_CRIADOR INTEGER NOT NULL, " +
                     " GRUPO_RECEPTOR INTEGER NOT NULL, " +
                     " contraproposta INTEGER NOT NULL," +
                     " finalizada INTEGER NOT NULL, " +
-                    " FOREIGN KEY (CRIADOR) REFERENCES Time(nome_time)," +
-                    " FOREIGN KEY (RECEPTOR) REFERENCES Time(nome_time)," +
+                    " FOREIGN KEY (ID_CRIADOR) REFERENCES Time(ID_TIME)," +
+                    " FOREIGN KEY (ID_RECEPTOR) REFERENCES Time(ID_TIME)," +
                     " FOREIGN KEY (GRUPO_CRIADOR) REFERENCES Jogador(ID_JOGADOR)" +
                     " FOREIGN KEY (GRUPO_RECEPTOR) REFERENCES Jogador(ID_JOGADOR)" +
                     ")";
@@ -84,27 +89,29 @@ public class Persistencia {
             System.out.println("Tabela Jogador criada com sucesso!");
             stmt.execute(sql_transacao);
             System.out.println("Tabela Transação criada com sucesso!");
-
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-
-
     }
 
-    public void inserirPontuacao(Pontuacao p){
+    public int inserirPontuacao(Pontuacao p){
         String sql = "INSERT INTO Pontuacao(ataque, defesa, fisico, geral) " +
                      "VALUES("+p.getAtaque()+","+p.getDefesa()+","+p.getFisico()+","+p.getGeral()+")";
         try {
+
             stmt.execute(sql);
+            ResultSet retorno = stmt.executeQuery("SELECT MAX(ID_PONTUACAO) AS max_id FROM Pontuacao");
+            int ID =  retorno.getInt("max_id");
+            p.setIdPontuacao(ID);
             System.out.println("SUCESSO: inserir Pontuação no SQLite!");
+            return ID;
         } catch (SQLException e) {
             System.out.println("Erro ao inserir Pontuação no SQLite!");
             throw new RuntimeException(e);
         }
     }
 
-    public Pontuacao recuperarPontuacao(long ID){
+    public Pontuacao recuperarPontuacao(int ID){
         String sql = "SELECT * FROM Pontuacao " +
                      "WHERE ID_PONTUACAO = " + ID;
         try {
@@ -121,4 +128,256 @@ public class Persistencia {
         }
     }
 
+    public void alterarPontuacao(Pontuacao p){
+        String sql = "UPDATE Pontuacao "+
+                "SET ataque = " +p.getAtaque() + ", defesa = "+p.getDefesa()+", fisico = "+p.getFisico()+", geral = "+p.getGeral()+
+                " WHERE ID_PONTUACAO = "+ p.getIdPontuacao();
+        try {
+            stmt.execute(sql);
+            boolean retorno = stmt.execute(sql);
+            System.out.println("SUCESSO: alterar Pontuação no SQLite!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao alterar Pontuação no SQLite!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int inserirPosicao(Posicao p){
+        String sql = "INSERT INTO Posicao(goleiro, zagueiro, meio_campo, atacante) " +
+                "VALUES("+p.isGoleiro()+","+p.isZagueiro()+","+p.isMeioCampista()+","+p.isAtacante()+")";
+        try {
+            stmt.execute(sql);
+            ResultSet retorno = stmt.executeQuery("SELECT MAX(ID_POSICAO) AS max_id_posicao FROM Posicao");
+            int ID =  retorno.getInt("max_id_posicao");
+            p.setIdPosicao(ID);
+            System.out.println("SUCESSO: inserir Posição no SQLite!");
+            return ID;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir Posição no SQLite!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Posicao recuperarPosicao(int ID){
+        String sql = "SELECT * FROM Posicao " +
+                "WHERE ID_POSICAO = " + ID;
+        try {
+            Posicao p = new Posicao(false,false,false,false);
+            ResultSet select = stmt.executeQuery(sql);
+            if(!select.isClosed()){
+                p.setIdPosicao(select.getInt("ID_POSICAO"));
+                p.setGoleiro(select.getBoolean("goleiro"));
+                p.setZagueiro(select.getBoolean("zagueiro"));
+                p.setMeioCampista(select.getBoolean("meio_campo"));
+                p.setAtacante(select.getBoolean("atacante"));
+            }
+            return p;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void alterarPosicao(Posicao p){
+        String sql = "UPDATE Posicao "+
+                "SET goleiro = " +p.isGoleiro() +
+                ", zagueiro = "+p.isZagueiro() +
+                ", meio_campo = "+p.isMeioCampista() +
+                ", atacante = "+p.isAtacante() +
+                " WHERE ID_POSICAO = "+ p.getIdPosicao();
+        try {
+            stmt.execute(sql);
+            boolean retorno = stmt.execute(sql);
+            System.out.println("SUCESSO: alterar Posição no SQLite!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao alterar Posição no SQLite!");
+            throw new RuntimeException(e);
+        }
+    }
+    public int inserirJogador(Jogador j){
+        String sql = "INSERT INTO Jogador( idade, nome, preco, ID_PONTUACAO, ID_POSICAO, ID_TIME) " +
+                "VALUES("+j.getIdade()+", ? ,"+j.getPreco()+","+ inserirPontuacao(j.getPontos())+
+                ","+inserirPosicao(j.getPosicoes())+","+ j.getIdTime()+
+                ")";
+        try {
+            PreparedStatement ps = conexaoBD.prepareStatement(sql);
+            ps.setString(1, j.getNome());
+            ps.execute();
+            //stmt.execute(sql);
+            ResultSet retorno = stmt.executeQuery("SELECT MAX(ID_JOGADOR) AS max_id FROM Jogador");
+            int ID =  retorno.getInt("max_id");
+            System.out.println("SUCESSO: inserir Jogador no SQLite!");
+            return ID;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir Jogador no SQLite!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Jogador recuperarJogador(int ID){
+        Jogador j = new Jogador("0", 99, new Posicao(false, false, false, false), 0, new Pontuacao(0,0,0), 0);
+        String sql = "SELECT nome, idade, preco, ID_PONTUACAO, ID_POSICAO, ID_TIME, ID_JOGADOR FROM Jogador " +
+                " WHERE ID_JOGADOR = " + ID + ";";
+        try {
+            ResultSet select = stmt.executeQuery(sql);
+            String nome = select.getString(1);
+            int idade = select.getInt(2);
+            int idPos = select.getInt(5);
+            int preco = select.getInt(3);
+            int idPont = select.getInt(4);
+            int idTime = select.getInt(6);
+            j = new Jogador(nome,idade , recuperarPosicao(idPos), preco , recuperarPontuacao(idPont), idTime);
+
+            j.setIdJogador(ID);
+
+            return j;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int inserirTime(Time t){
+        String sql = "INSERT INTO Time( nome_time, nome_dono, login, senha) " +
+                "VALUES('"+t.getNome()+"','"+t.getNomeDono()+"','"+t.getLogin()+
+                "','"+t.getSenha()+
+                "')";
+        try {
+            PreparedStatement ps = conexaoBD.prepareStatement(sql);
+            ps.execute();
+            //stmt.execute(sql);
+            ResultSet retorno = stmt.executeQuery("SELECT MAX(ID_TIME) AS max_id FROM Time");
+            int ID =  retorno.getInt("max_id");
+            System.out.println("SUCESSO: inserir Time no SQLite!");
+            return ID;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir Time no SQLite!");
+            return -1;
+        }
+    }
+    public Time recuperarTime(int ID){
+        Time t = new Time("","","","");
+        String sql = "SELECT * FROM Time " +
+                "WHERE ID_TIME = " + ID;
+        try {
+            ResultSet select = stmt.executeQuery(sql);
+            if(!select.isClosed()){
+                t.setIDTime(select.getInt("ID_TIME"));
+                t.setNome(select.getString("nome_time"));
+                t.setNomeDono(select.getString("nome_dono"));
+                t.setLogin(select.getString("login"));
+                t.setSenha(select.getString("senha"));
+            }
+            return t;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void recuperarElenco(Time t) {
+        String sql = "SELECT ID_JOGADOR, nome FROM Jogador "+
+                "WHERE ID_TIME = " + t.getIDTime() + ";";
+        try {
+            stmt = conexaoBD.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            List<Integer> resultado = new ArrayList<>();
+            List<Jogador> elenco = new ArrayList<>();
+            while (rs.next()) {
+                if(rs.getMetaData().getColumnCount() != 2){ continue;}
+                int j = rs.getInt(1);
+                resultado.add(j);
+            }
+            for(int id: resultado){
+                elenco.add(this.recuperarJogador(id));
+            }
+            t.carregarElenco(elenco);
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public int inserirTransacao(Transacao t){
+        String sql = "INSERT INTO Transacao(ID_CRIADOR, ID_RECEPTOR, GRUPO_CRIADOR, GRUPO_RECEPTOR, contraproposta, finalizada) " +
+                "VALUES("+t.getCriador()+","+t.getReceptor()+","+t.getGrupoCriador().getIdJogador()+
+                ","+t.getGrupoReceptor().getIdJogador()+","+t.isContraproposta()+","+t.isFinalizada()+
+                ")";
+        try {
+            PreparedStatement ps = conexaoBD.prepareStatement(sql);
+            ps.execute();
+            ResultSet retorno = stmt.executeQuery("SELECT MAX(ID_TRANSACAO) AS max_id FROM Transacao");
+            int ID =  retorno.getInt("max_id");
+            System.out.println("SUCESSO: inserir Transacao no SQLite!");
+            return ID;
+        } catch (SQLException e) {
+            System.out.println("Erro ao inserir Transacao no SQLite!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Transacao recuperarTransacao(int ID){
+        Transacao t = null;
+        String sql = "SELECT * FROM Transacao " +
+                "WHERE ID_TRANSACAO = " + ID;
+        try {
+            ResultSet select = stmt.executeQuery(sql);
+            if(!select.isClosed()){
+                int idCriador = select.getInt("ID_CRIADOR");
+                int idReceptor = select.getInt("ID_RECEPTOR");
+                int grupoCriador = select.getInt("GRUPO_CRIADOR");
+                int grupoReceptor = select.getInt("GRUPO_RECEPTOR");
+                boolean finalizada = select.getBoolean("finalizada");
+                t = new Transacao(idCriador, idReceptor,this.recuperarJogador(grupoCriador),this.recuperarJogador(grupoReceptor));
+                t.setIdTransacao(ID);
+            }
+
+            return t;
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public void alterarTransacao(Transacao t, boolean resposta){
+        String sql = "UPDATE Transacao "+
+                "SET finalizada = " + resposta +
+                " WHERE ID_TRANSACAO = "+ t.getIdTransacao() + ";";
+        String sqlTroca1 =  "UPDATE Jogador "+
+                "SET ID_TIME = " + t.getReceptor() +
+                " WHERE ID_JOGADOR = "+ t.getGrupoCriador().getIdJogador() + ";";
+        String sqlTroca2 =  "UPDATE Jogador "+
+                "SET ID_TIME = " + t.getCriador() +
+                " WHERE ID_JOGADOR = "+ t.getGrupoReceptor().getIdJogador() + ";";
+        try {
+            stmt.execute(sql);
+            boolean retorno = stmt.execute(sql);
+            if(resposta){
+                stmt.execute(sqlTroca1);
+                stmt.execute(sqlTroca2);
+            }
+            System.out.println("SUCESSO: alterar Transação no SQLite!");
+        } catch (SQLException e) {
+            System.out.println("Erro ao alterar Transação no SQLite!");
+            throw new RuntimeException(e);
+        }
+    }
+
+    public List<Transacao> historicoTransacoes(Time t) {
+        String sql = "SELECT ID_TRANSACAO FROM Transacao "+
+                "WHERE ID_CRIADOR = " + t.getIDTime() + " OR ID_RECEPTOR = " + t.getIDTime() +
+                " ORDER BY ID_TRANSACAO DESC";
+        try {
+            stmt = conexaoBD.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            List<Integer> resultado = new ArrayList<>();
+            List<Transacao> historico = new ArrayList<>();
+            while (rs.next()) {
+                if(rs.getMetaData().getColumnCount() != 1){ continue;}
+                int j = rs.getInt(1);
+                resultado.add(j);
+            }
+            for(int id: resultado){
+                historico.add(this.recuperarTransacao(id));
+            }
+            return historico;
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }
