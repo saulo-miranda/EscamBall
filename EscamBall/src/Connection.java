@@ -19,10 +19,10 @@ public class Connection extends Thread{
     private void ComunicacaoTimeTCP() throws IOException {
         try {
             Time time = (Time) in.readObject();
-            System.out.println("O cliente "+contador+" chegou! O time dele é o: "+time.getNome());
+            System.out.println("O cliente "+contador+" chegou! O time dele é o: "+time.getNomeTime());
             out.writeObject(time);
             out.flush();
-            System.out.printf("Eu respondi %s!\n", time.getNome());
+            System.out.printf("Eu respondi %s!\n", time.getNomeTime());
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         } finally {

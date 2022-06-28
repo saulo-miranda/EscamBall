@@ -21,14 +21,17 @@ public class TCPCliente {
     }
     public void ComunicacaoTimeTCP(Time time) throws IOException {
         try{
-            System.out.printf("Estou enviando o time: %s\n", time.getNome());
+            System.out.printf("Estou enviando o time: %s\n", time.getNomeTime());
             out.writeObject(time);
             out.flush();
 
             System.out.println("Enviado");
 
             Time timeRecebido = (Time) in.readObject();
-            System.out.printf("Recebi o time: %s\n", timeRecebido.getNome());
+            System.out.printf("Recebi o time: %s\n", timeRecebido.getNomeTime());
+            System.out.printf("Dono: %s\n", timeRecebido.getNomeDono());
+            System.out.printf("Login: %s\n", timeRecebido.getLogin());
+            System.out.printf("Senha: %s\n", timeRecebido.getSenha());
 
             System.out.println("End Client");
 
@@ -40,10 +43,6 @@ public class TCPCliente {
             client.close();
         }
     }
-    public Time testeNovoTime(){
-        return new Time("Teste FC", "John Texte", "teste123", "testesenha");
-    }
-
     public Socket getClient() {
         return client;
     }

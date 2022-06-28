@@ -1,47 +1,71 @@
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.io.Serializable;
 
 public class Time implements Serializable{
-    private String Nome;
-    private final List<Jogador> Elenco;
-
     private String NomeDono;
+    private String NomeTime;
     private String Login;
     private String Senha;
+    private final List<Jogador> Elenco;
 
-    public Time(String nome, String nomeDono, String login, String senha){
-        this.Nome = nome;
+    public Time(String nomeDono, String nomeTime, String login, String senha) throws NoSuchAlgorithmException {
+        this.NomeTime = nomeTime;
+        this.NomeDono = nomeDono;
+        this.Login = login;
+        this.Senha = this.geraHashSenha(senha);
         this.Elenco = new ArrayList<>();
-        NomeDono = nomeDono;
-        Login = login;
-        Senha = senha;
     }
-    //GET
+
+    private String geraHashSenha(String senha) throws NoSuchAlgorithmException {
+        MessageDigest algorithm = MessageDigest.getInstance("SHA-256");
+        byte[] messageDigest = algorithm.digest(senha.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : messageDigest) {
+            hexString.append(String.format("%02X", 0xFF & b));
+        }
+        return hexString.toString();
+    }
 
     public String getNomeDono() {
         return NomeDono;
+    }
+
+    public void setNomeDono(String nomeDono) {
+        NomeDono = nomeDono;
+    }
+
+    public String getNomeTime() {
+        return NomeTime;
+    }
+
+    public void setNomeTime(String nomeTime) {
+        NomeTime = nomeTime;
     }
 
     public String getLogin() {
         return Login;
     }
 
+    public void setLogin(String login) {
+        Login = login;
+    }
+
     public String getSenha() {
         return Senha;
     }
 
-    public String getNome() {
-        return Nome;
+    public void setSenha(String senha) throws NoSuchAlgorithmException {
+        Senha = geraHashSenha(senha);
     }
 
     public List<Jogador> getElenco() {
         return Elenco;
-    }
-    //SET
-    public void setNome(String nome) {
-        Nome = nome;
     }
 
     public boolean adicionarJogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos){
