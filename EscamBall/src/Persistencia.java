@@ -1,3 +1,4 @@
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -237,7 +238,7 @@ public class Persistencia {
 
     public int inserirTime(Time t){
         String sql = "INSERT INTO Time( nome_time, nome_dono, login, senha) " +
-                "VALUES('"+t.getNome()+"','"+t.getNomeDono()+"','"+t.getLogin()+
+                "VALUES('"+t.getNomeTime()+"','"+t.getNomeDono()+"','"+t.getLogin()+
                 "','"+t.getSenha()+
                 "')";
         try {
@@ -253,15 +254,15 @@ public class Persistencia {
             return -1;
         }
     }
-    public Time recuperarTime(int ID){
+    public Time recuperarTime(int ID) throws NoSuchAlgorithmException {
         Time t = new Time("","","","");
         String sql = "SELECT * FROM Time " +
                 "WHERE ID_TIME = " + ID;
         try {
             ResultSet select = stmt.executeQuery(sql);
             if(!select.isClosed()){
-                t.setIDTime(select.getInt("ID_TIME"));
-                t.setNome(select.getString("nome_time"));
+                t.setIdTime(select.getInt("ID_TIME"));
+                t.setNomeTime(select.getString("nome_time"));
                 t.setNomeDono(select.getString("nome_dono"));
                 t.setLogin(select.getString("login"));
                 t.setSenha(select.getString("senha"));
@@ -269,12 +270,14 @@ public class Persistencia {
             return t;
         } catch (SQLException e) {
             throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
         }
     }
 
     public void recuperarElenco(Time t) {
         String sql = "SELECT ID_JOGADOR, nome FROM Jogador "+
-                "WHERE ID_TIME = " + t.getIDTime() + ";";
+                "WHERE ID_TIME = " + t.getIdTime() + ";";
         try {
             stmt = conexaoBD.createStatement();
             ResultSet rs = stmt.executeQuery(sql);
@@ -360,7 +363,7 @@ public class Persistencia {
 
     public List<Transacao> historicoTransacoes(Time t) {
         String sql = "SELECT ID_TRANSACAO FROM Transacao "+
-                "WHERE ID_CRIADOR = " + t.getIDTime() + " OR ID_RECEPTOR = " + t.getIDTime() +
+                "WHERE ID_CRIADOR = " + t.getIdTime() + " OR ID_RECEPTOR = " + t.getIdTime() +
                 " ORDER BY ID_TRANSACAO DESC";
         try {
             stmt = conexaoBD.createStatement();
