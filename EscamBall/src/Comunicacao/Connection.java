@@ -17,10 +17,26 @@ public class Connection extends Thread{
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.in = new ObjectInputStream(clientSocket.getInputStream());
             //this.ComunicacaoTimeTCP();
-            this.Login();
-        }catch (IOException ignored){} catch (NoSuchAlgorithmException e) {
+            //this.Login();
+            this.start();
+        }catch (IOException ignored){}
+    }
+    public void run(){
+        try {
+            Requisicao requisicao = (Requisicao) in.readObject();
+            switch (requisicao.getParametro()){
+                case LOGIN:
+                    this.Login();
+                    break;
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
+
     }
     private void Login() throws IOException, NoSuchAlgorithmException {
         try{
