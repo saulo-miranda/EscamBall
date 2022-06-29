@@ -80,12 +80,12 @@
       </component>
       <component id="bb0fc" class="javax.swing.JLabel">
         <constraints>
-          <grid row="1" column="1" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
+          <grid row="1" column="1" row-span="1" col-span="2" vsize-policy="0" hsize-policy="0" anchor="0" fill="2" indent="0" use-parent-layout="false"/>
         </constraints>
         <properties>
           <font size="16"/>
           <labelFor value="a7c68"/>
-          <text value="Controladores.Controladores.Cadastro"/>
+          <text value="Cadastro"/>
         </properties>
       </component>
       <vspacer id="ea398">

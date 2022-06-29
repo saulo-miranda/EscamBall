@@ -37,7 +37,7 @@ public class EscamballAppGUI extends JFrame{
                 else {
                     login = new Login(LoginTextField.getText(), String.valueOf(passwordField1.getPassword()));
                     try{
-                        Controladores.Time time = clientSocket.ComunicacaoLogin(login);
+                        Time time = clientSocket.ComunicacaoLogin(login);
                         if(time == null){
                             JOptionPane.showMessageDialog(null, "Login recusado, crie uma conta!");
                             dispose();

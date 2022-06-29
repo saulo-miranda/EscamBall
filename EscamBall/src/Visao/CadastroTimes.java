@@ -2,6 +2,7 @@ package Visao;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 import Controladores.Time;
 
@@ -23,19 +24,35 @@ public class CadastroTimes extends JFrame {
         cadastreSeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(ConfirmaSenhas()){
+                if(!ConfirmaSenhas()){
+                    JOptionPane.showMessageDialog(null, "As senhas divergem");
+                } else if ((nomeTextField.getText().equals("")
+                        || nomeDoTimeTextField.getText().equals("")
+                        || loginTextField.getText().equals("")
+                        || new String(PasswordField.getPassword()).equals("")
+                        || new String(ConfirmPasswordField.getPassword()).equals(""))) {
+                    JOptionPane.showMessageDialog(null, "Os campos estão vazios. Preencha todos por favor.");
+
+                } else {
                     /*
-                    toBack();
-                    setVisible(false);
-                    EscamballAppGUI frame = new EscamballAppGUI();
-                    frame.setSize(800,600);
-                    frame.setVisible(true);
-                    frame.toFront();
-                    */
+                    * TODO: Comunicação com o server
+                    * */
+                    try {
+                        Time time = new Time(nomeTextField.getText(),
+                                nomeDoTimeTextField.getText(),
+                                loginTextField.getText(),
+                                String.valueOf(PasswordField.getPassword()));
+                        toBack();
+                        setVisible(false);
+                        App app = new App(time);
+                        app.setSize(800,600);
+                        app.setVisible(true);
+                        app.toFront();
+                    } catch (NoSuchAlgorithmException ex) {
+                        throw new RuntimeException(ex);
+                    }
                 }
-                else{
-                    DangerPasswordLabel.setText("As senhas digitadas não são iguais!");
-                }
+
 
             }
         });
