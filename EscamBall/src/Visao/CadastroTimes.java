@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
+
+import Comunicacao.TCPCliente;
 import Controladores.Time;
 
 public class CadastroTimes extends JFrame {
@@ -16,7 +18,7 @@ public class CadastroTimes extends JFrame {
     private JPasswordField ConfirmPasswordField;
     private JLabel DangerPasswordLabel;
 
-    public CadastroTimes(){
+    public CadastroTimes(TCPCliente clientSocket){
         super("Escamball - Cadastre-se");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(panel1);

@@ -65,7 +65,7 @@ public class EscamballAppGUI extends JFrame{
             public void actionPerformed(ActionEvent e) {
                 toBack();
                 setVisible(false);
-                CadastroTimes cadastro = new CadastroTimes();
+                CadastroTimes cadastro = new CadastroTimes(clientSocket);
                 cadastro.setSize(800,600);
                 cadastro.setVisible(true);
                 cadastro.toFront();
