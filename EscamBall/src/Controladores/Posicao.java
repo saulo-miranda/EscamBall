@@ -1,6 +1,8 @@
 package Controladores;
 
-public class Posicao {
+import java.io.Serializable;
+
+public class Posicao implements Serializable {
 
     private int IdPosicao;
     private boolean Goleiro;

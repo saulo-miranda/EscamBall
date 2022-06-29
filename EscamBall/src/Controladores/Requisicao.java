@@ -1,6 +1,8 @@
 package Controladores;
 
-public class Requisicao {
+import java.io.Serializable;
+
+public class Requisicao implements Serializable {
     Parametros parametro;
     Object value;
 

@@ -80,7 +80,8 @@ public class TCPCliente {
     public Time ComunicacaoLogin(Login login) throws IOException {
         try {
             System.out.printf("Estou enviando o cliente "+login.getLogin()+"\n");
-            out.writeObject(login);
+            Requisicao requisicao = new Requisicao(Parametros.LOGIN,  login);
+            out.writeObject(requisicao);
             out.flush();
 
             System.out.println("Enviado");

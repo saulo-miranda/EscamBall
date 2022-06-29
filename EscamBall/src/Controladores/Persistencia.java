@@ -15,6 +15,7 @@ public class Persistencia {
     public Persistencia(String bd){
         BD = bd;
         this.conectar();
+        this.criarTabela();
     }
     private void conectar(){
         try {
@@ -212,7 +213,7 @@ public class Persistencia {
             return ID;
         } catch (SQLException e) {
             System.out.println("Erro ao inserir Jogador no SQLite!");
-            throw new RuntimeException(e);
+            return -1;
         }
     }
 
@@ -313,7 +314,7 @@ public class Persistencia {
             return ID;
         } catch (SQLException e) {
             System.out.println("Erro ao inserir Transacao no SQLite!");
-            throw new RuntimeException(e);
+            return -1;
         }
     }
 
@@ -382,6 +383,25 @@ public class Persistencia {
             }
             return historico;
         }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public Time recuperarTimePorLogin(String login) throws NoSuchAlgorithmException {
+        Time t = new Time("","","","");
+        String sql = "SELECT * FROM Time " +
+                "WHERE login = \'" + login + "\'";
+        try {
+            ResultSet select = stmt.executeQuery(sql);
+            if(!select.isClosed()){
+                t.setIdTime(select.getInt("ID_TIME"));
+                t.setNomeTime(select.getString("nome_time"));
+                t.setNomeDono(select.getString("nome_dono"));
+                t.setLogin(select.getString("login"));
+                t.setSenha(select.getString("senha"));
+            }
+            return t;
+        } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }

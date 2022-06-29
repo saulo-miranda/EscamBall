@@ -10,12 +10,15 @@ public class Connection extends Thread{
     private ObjectInputStream in;
     private Socket clientSocket;
     private int contador;
+
+    private Persistencia persistencia;
     public Connection(Socket clientSocket, int contador) {
         try{
             this.clientSocket = clientSocket;
             this.contador = contador;
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.in = new ObjectInputStream(clientSocket.getInputStream());
+            this.persistencia = new Persistencia("dado1.db");
             //this.ComunicacaoTimeTCP();
             //this.Login();
             this.start();
@@ -26,7 +29,16 @@ public class Connection extends Thread{
             Requisicao requisicao = (Requisicao) in.readObject();
             switch (requisicao.getParametro()){
                 case LOGIN:
-                    this.Login();
+                    this.Login(requisicao.getValue());
+                    break;
+                case CADASTRO:
+                    this.Cadastro(requisicao.getValue());
+                    break;
+                case NOVO_JOGADOR:
+                    this.NovoJogador(requisicao.getValue());
+                    break;
+                case TRANSACAO:
+                    this.NovaTransacao(requisicao.getValue());
                     break;
             }
         } catch (IOException e) {
@@ -38,10 +50,11 @@ public class Connection extends Thread{
         }
 
     }
-    private void Login() throws IOException, NoSuchAlgorithmException {
+    private void Login(Object value) throws IOException, NoSuchAlgorithmException {
         try{
-            Time time = new Time("Ronaldo", "Cruzeiro", "ronaldoCruzeiro", "123456");
-            Login login = (Login) in.readObject();
+            Login login = (Login) value;
+            Time time = persistencia.recuperarTimePorLogin(login.getLogin());
+            persistencia.recuperarElenco(time);
             System.out.printf("O cliente "+contador+" chegou! O Login é: "+login.getLogin()+"\n");
             if(login.getLogin().equals(time.getLogin()) && login.getSenha().equals(time.getSenha())){
                 out.writeObject(time);
@@ -49,9 +62,64 @@ public class Connection extends Thread{
                 out.writeObject(null);
             }
             out.flush();
-        }catch (ClassNotFoundException | NoSuchAlgorithmException e){
+        }catch (NoSuchAlgorithmException e){
             throw new RuntimeException(e);
         }finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+    private void Cadastro(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            Time time = (Time) value;
+            int insert = persistencia.inserirTime(time);
+
+            if(insert > 0){
+                System.out.printf("O time "+ time.getNomeTime()+" foi inserido com sucesso!");
+                out.writeObject(time);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+    private void NovoJogador(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            Jogador jogador = (Jogador) value;
+            int insert = persistencia.inserirJogador(jogador);
+            if(insert > 0){
+                System.out.printf("O jogador "+ jogador.getNome()+" foi inserido com sucesso!");
+                out.writeObject(insert);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+    private void NovaTransacao(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            Transacao transacao = (Transacao) value;
+            int insert = persistencia.inserirTransacao(transacao);
+            if(insert > 0){
+                System.out.printf("A transacao com ID = "+ insert +" foi inserido com sucesso!");
+                out.writeObject(insert);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
             in.close();
             out.close();
             clientSocket.close();
