@@ -240,6 +240,7 @@ public class Persistencia {
     }
 
     public int inserirTime(Time t){
+        System.out.println(t.getSenha());
         String sql = "INSERT INTO Time( nome_time, nome_dono, login, senha) " +
                 "VALUES('"+t.getNomeTime()+"','"+t.getNomeDono()+"','"+t.getLogin()+
                 "','"+t.getSenha()+

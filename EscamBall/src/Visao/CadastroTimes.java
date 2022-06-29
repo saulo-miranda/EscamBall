@@ -2,6 +2,7 @@ package Visao;
 
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Objects;
 
@@ -44,6 +45,7 @@ public class CadastroTimes extends JFrame {
                                 nomeDoTimeTextField.getText(),
                                 loginTextField.getText(),
                                 String.valueOf(PasswordField.getPassword()));
+                        Time retorno = clientSocket.ComunicacaoCadastro(time);
                         toBack();
                         setVisible(false);
                         App app = new App(time);
@@ -51,6 +53,8 @@ public class CadastroTimes extends JFrame {
                         app.setVisible(true);
                         app.toFront();
                     } catch (NoSuchAlgorithmException ex) {
+                        throw new RuntimeException(ex);
+                    } catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 }

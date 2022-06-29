@@ -100,4 +100,28 @@ public class TCPCliente {
             client.close();
         }
     }
+
+    public Time ComunicacaoCadastro(Time time) throws IOException {
+        try {
+            System.out.printf("Estou cadastrando o time "+time.getNomeTime()+"\n");
+            Requisicao requisicao = new Requisicao(Parametros.CADASTRO,  time);
+            out.writeObject(requisicao);
+            out.flush();
+
+            System.out.println("Enviado");
+
+            Time recebido = (Time) in.readObject();
+            return recebido;
+
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        finally {
+            out.close();
+            in.close();
+            client.close();
+        }
+    }
 }

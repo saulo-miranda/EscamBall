@@ -7,8 +7,9 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) throws SQLException, NoSuchAlgorithmException {
+        Persistencia p = new Persistencia("dado1.db");
         TCPServidor server = new TCPServidor();
-        server.comunicacao();
+        server.comunicacao(p);
         /*
             Persistencia p = new Persistencia("dado1.db");
             p.criarTabela();

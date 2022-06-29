@@ -1,5 +1,7 @@
 package Comunicacao;
 
+import Controladores.Persistencia;
+
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -54,14 +56,14 @@ public class TCPServidor {
         this.contador = contador;
     }
 
-    public void comunicacao(){
+    public void comunicacao(Persistencia persistencia){
         try{
             System.out.println("Eu sou o servidor, e estou rodando!");
             while(true) {
                 System.out.println("Esperando...");
                 clientSocket = listenSocket.accept();
                 System.out.println("Aceitei o cliente "+contador);
-                Connection c = new Connection(clientSocket,contador);
+                Connection c = new Connection(clientSocket,contador, persistencia);
                 contador++;
             }
         }catch (IOException ignored){}

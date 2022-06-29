@@ -12,13 +12,13 @@ public class Connection extends Thread{
     private int contador;
 
     private Persistencia persistencia;
-    public Connection(Socket clientSocket, int contador) {
+    public Connection(Socket clientSocket, int contador, Persistencia p) {
         try{
             this.clientSocket = clientSocket;
             this.contador = contador;
             this.out = new ObjectOutputStream(clientSocket.getOutputStream());
             this.in = new ObjectInputStream(clientSocket.getInputStream());
-            this.persistencia = new Persistencia("dado1.db");
+            this.persistencia = p;
             //this.ComunicacaoTimeTCP();
             //this.Login();
             this.start();
