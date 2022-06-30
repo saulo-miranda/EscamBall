@@ -62,12 +62,16 @@ public class Time implements Serializable{
         return Senha;
     }
 
-    public void setSenha(String senha) throws NoSuchAlgorithmException {
-        Senha = geraHashSenha(senha);
+    public void setSenha(String senha)  {
+        Senha = senha;
     }
 
     public List<Jogador> getElenco() {
         return Elenco;
+    }
+
+    public void addJogador(Jogador jogador){
+        Elenco.add(jogador);
     }
 
     public boolean adicionarJogador(String nome, int idade, Posicao posicoes, long preco, Pontuacao pontos, int idTime){

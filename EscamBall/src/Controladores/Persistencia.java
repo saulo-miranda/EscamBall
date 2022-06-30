@@ -18,12 +18,13 @@ public class Persistencia {
         this.criarTabela();
     }
     private void conectar(){
+        Connection con = null;
         try {
-            String url = "jdbc:sqlite:./"+BD;
-            conexaoBD = DriverManager.getConnection(url);
-            System.out.println("Conexao com banco de dados " + BD + " estabelecida.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Class.forName("org.sqlite.JDBC");
+            con = DriverManager.getConnection("jdbc:sqlite:"+BD);
+            conexaoBD = con;
+        } catch (SQLException | ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
     }
     private void fechar() throws SQLException {
@@ -273,8 +274,6 @@ public class Persistencia {
             }
             return t;
         } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }

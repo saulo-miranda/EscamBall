@@ -24,43 +24,37 @@ public class CadastroTimes extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(panel1);
         this.pack();
-        cadastreSeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if(!ConfirmaSenhas()){
-                    JOptionPane.showMessageDialog(null, "As senhas divergem");
-                } else if ((nomeTextField.getText().equals("")
-                        || nomeDoTimeTextField.getText().equals("")
-                        || loginTextField.getText().equals("")
-                        || new String(PasswordField.getPassword()).equals("")
-                        || new String(ConfirmPasswordField.getPassword()).equals(""))) {
-                    JOptionPane.showMessageDialog(null, "Os campos estão vazios. Preencha todos por favor.");
+        cadastreSeButton.addActionListener(e -> {
+            if(!ConfirmaSenhas()){
+                JOptionPane.showMessageDialog(null, "As senhas divergem");
+            } else if ((nomeTextField.getText().equals("")
+                    || nomeDoTimeTextField.getText().equals("")
+                    || loginTextField.getText().equals("")
+                    || new String(PasswordField.getPassword()).equals("")
+                    || new String(ConfirmPasswordField.getPassword()).equals(""))) {
+                JOptionPane.showMessageDialog(null, "Os campos estão vazios. Preencha todos por favor.");
 
-                } else {
-                    /*
-                    * TODO: Comunicação com o server
-                    * */
-                    try {
-                        Time time = new Time(nomeTextField.getText(),
-                                nomeDoTimeTextField.getText(),
-                                loginTextField.getText(),
-                                String.valueOf(PasswordField.getPassword()));
-                        Time retorno = clientSocket.ComunicacaoCadastro(time);
-                        toBack();
-                        setVisible(false);
-                        App app = new App(time);
-                        app.setSize(800,600);
-                        app.setVisible(true);
-                        app.toFront();
-                    } catch (NoSuchAlgorithmException ex) {
-                        throw new RuntimeException(ex);
-                    } catch (IOException ex) {
-                        throw new RuntimeException(ex);
-                    }
+            } else {
+                try {
+                    Time time = new Time(nomeTextField.getText(),
+                            nomeDoTimeTextField.getText(),
+                            loginTextField.getText(),
+                            String.valueOf(PasswordField.getPassword()));
+                    Time retorno = clientSocket.ComunicacaoCadastro(time);
+                    toBack();
+                    setVisible(false);
+                    App app = new App(retorno);
+                    app.setSize(800,600);
+                    app.setVisible(true);
+                    app.toFront();
+                } catch (NoSuchAlgorithmException ex) {
+                    throw new RuntimeException(ex);
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
-
-
             }
+
+
         });
     }
 

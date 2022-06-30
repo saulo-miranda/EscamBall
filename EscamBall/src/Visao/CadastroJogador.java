@@ -1,5 +1,7 @@
 package Visao;
 
+import Comunicacao.TCPCliente;
+import Controladores.Jogador;
 import Controladores.Pontuacao;
 import Controladores.Posicao;
 import Controladores.Time;
@@ -20,15 +22,13 @@ public class CadastroJogador extends JFrame {
     private JTextField Fisico;
     private JButton cadastreButton;
 
-    public CadastroJogador(Time time){
+    public CadastroJogador(Time time, TCPCliente clientSocket){
         super("Escamball - Novo Jogador");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
         this.pack();
         cadastreButton.addActionListener(e -> {
-            /*
-            * TODO: Cadastro de jogador no server
-            * */
+
             String posicaoString = (String) Posicao.getSelectedItem();
             if(Nome.getText().equals("")
             || Idade.getText().equals("")
@@ -40,7 +40,6 @@ public class CadastroJogador extends JFrame {
             }
             else{
                 Posicao posicao = null;
-                System.out.println(posicaoString);
                 if(posicaoString.equals("Goleiro")){
                     posicao = new Posicao(true, false, false,false);
                 }
@@ -59,13 +58,27 @@ public class CadastroJogador extends JFrame {
                 int idade = Integer.valueOf(Idade.getText());
                 long preco = Integer.valueOf(Preco.getText());
                 Pontuacao pontos = new Pontuacao(ataque,defesa,fisico);
-                time.adicionarJogador(Nome.getText(), idade,posicao, preco, pontos ,time.getIdTime());
-                toBack();
-                setVisible(false);
-                App app = new App(time);
-                app.setSize(800,600);
-                app.setVisible(true);
-                app.toFront();
+
+                Jogador jogador = new Jogador(Nome.getText(), idade,posicao, preco, pontos ,time.getIdTime());
+
+                try {
+                    Jogador retorno = clientSocket.ComunicacaoNovoJogador(jogador);
+
+                    time.addJogador(retorno);
+
+                    System.out.println(time.getElenco());
+
+                    toBack();
+                    setVisible(false);
+                    App app = new App(time);
+                    app.setSize(800,600);
+                    app.setVisible(true);
+                    app.toFront();
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }
         });
     }

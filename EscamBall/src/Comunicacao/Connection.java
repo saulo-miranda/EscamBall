@@ -53,7 +53,9 @@ public class Connection extends Thread{
     private void Login(Object value) throws IOException, NoSuchAlgorithmException {
         try{
             Login login = (Login) value;
+            System.out.println(" Login Connection: "+login.getSenha());
             Time time = persistencia.recuperarTimePorLogin(login.getLogin());
+            System.out.println(" Login Connection: "+time.getSenha());
             persistencia.recuperarElenco(time);
             System.out.printf("O cliente "+contador+" chegou! O Login é: "+login.getLogin()+"\n");
             if(login.getLogin().equals(time.getLogin()) && login.getSenha().equals(time.getSenha())){
@@ -96,7 +98,7 @@ public class Connection extends Thread{
             int insert = persistencia.inserirJogador(jogador);
             if(insert > 0){
                 System.out.printf("O jogador "+ jogador.getNome()+" foi inserido com sucesso!");
-                out.writeObject(insert);
+                out.writeObject(jogador);
             } else{
                 out.writeObject(null);
             }

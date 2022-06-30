@@ -1,5 +1,6 @@
 package Visao;
 
+import Comunicacao.TCPCliente;
 import Controladores.Jogador;
 import Controladores.Time;
 
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Vector;
 
 public class App extends JFrame {
-
+    private TCPCliente clientSocket;
     private JPanel mainPanel;
     private JTabbedPane Tables;
     private JPanel PropostasPanel;
@@ -27,11 +28,17 @@ public class App extends JFrame {
 
     public App(Time time){
         super("Escamball");
-        System.out.println(time.getElenco().isEmpty());
+
+        clientSocket = new TCPCliente();
+
+        Iterator<Jogador> it = time.getElenco().iterator();
+        while(it.hasNext()){
+            System.out.println(it.next().getNome());
+        }
 
         /*
         * TODO: Mostrar lista de jogadores
-        * */
+        *
 
         if(!time.getElenco().isEmpty()){
             Iterator<Jogador> it = time.getElenco().iterator();
@@ -42,13 +49,15 @@ public class App extends JFrame {
             Lista = new JList(nomesJogadores.toArray());
         }
 
+         */
+
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
         this.pack();
         adicionarNovoJogadorButton.addActionListener(e -> {
             toBack();
             setVisible(false);
-            CadastroJogador novoJogador = new CadastroJogador(time);
+            CadastroJogador novoJogador = new CadastroJogador(time, clientSocket);
             novoJogador.setSize(800,600);
             novoJogador.setVisible(true);
             novoJogador.toFront();
