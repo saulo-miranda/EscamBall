@@ -73,4 +73,8 @@ public class Transacao implements Serializable {
     public void setFinalizada(boolean finalizada) {
         Finalizada = finalizada;
     }
+
+    public void setContraproposta(boolean contraproposta) {
+        Contraproposta = contraproposta;
+    }
 }

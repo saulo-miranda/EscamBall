@@ -54,6 +54,9 @@ public class Connection extends Thread{
                 case BUSCA_ID:
                     this.BuscaJogadorPorId(requisicao.getValue());
                     break;
+                case RESPONDER_TRANSACAO:
+                    this.ResponderTransacao(requisicao.getValue());
+                    break;
 
             }
         } catch (IOException e) {
@@ -204,6 +207,25 @@ public class Connection extends Thread{
             if(busca != null){
                 System.out.printf("A busca pelas transações de  "+ time.getNomeTime() +" foi efetuada com sucesso!");
                 out.writeObject(busca);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+    private void ResponderTransacao(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            Transacao transacao = (Transacao) value;
+            boolean update = persistencia.alterarTransacao(transacao);
+
+            if(update){
+                System.out.printf("A transação "+ transacao.getIdTransacao()+" foi atualizada com sucesso!");
+                out.writeObject(update);
             } else{
                 out.writeObject(null);
             }

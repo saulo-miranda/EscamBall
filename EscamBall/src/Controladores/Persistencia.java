@@ -385,9 +385,10 @@ public class Persistencia {
         }
     }
 
-    public void alterarTransacao(Transacao t, boolean resposta){
+    public boolean alterarTransacao(Transacao t){
         String sql = "UPDATE Transacao "+
-                "SET finalizada = " + resposta +
+                "SET finalizada = " + true + " , " +
+                "SET contraproposta = " + t.isContraproposta() +
                 " WHERE ID_TRANSACAO = "+ t.getIdTransacao() + ";";
         String sqlTroca1 =  "UPDATE Jogador "+
                 "SET ID_TIME = " + t.getReceptor() +
@@ -398,14 +399,15 @@ public class Persistencia {
         try {
             stmt.execute(sql);
             boolean retorno = stmt.execute(sql);
-            if(resposta){
+            if(t.isContraproposta()){
                 stmt.execute(sqlTroca1);
                 stmt.execute(sqlTroca2);
             }
             System.out.println("SUCESSO: alterar Transação no SQLite!");
+            return true;
         } catch (SQLException e) {
             System.out.println("Erro ao alterar Transação no SQLite!");
-            throw new RuntimeException(e);
+            return false;
         }
     }
 
