@@ -6,11 +6,16 @@ import Controladores.Time;
 import Controladores.Transacao;
 
 import javax.swing.*;
+import javax.swing.event.ListDataListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 public class App extends JFrame {
     private TCPCliente clientSocket;
@@ -21,9 +26,6 @@ public class App extends JFrame {
     private JPanel MercadoPanel;
     private JPanel PerfilPanel;
     private JButton adicionarNovoJogadorButton;
-    private JTextField textField1;
-    private JButton trocarLoginButton;
-    private JButton alterarASenhaButton;
     private JButton sairButton;
     private JList Lista;
     private JTextField pesquisaJogadorField;
@@ -38,20 +40,29 @@ public class App extends JFrame {
     private JButton aceitarButton;
     private JTextField idDeseja;
     private JTextField idJogadorTime;
+    private JLabel BoasVindasLabel;
+    private JLabel LoginLabel;
+
+    private List<Jogador> jogadoresPesquisados;
+    private Jogador jogadorEscolhido;
 
     public App(Time time){
         super("Escamball");
 
         clientSocket = new TCPCliente();
 
+        BoasVindasLabel.setText("Olá "+time.getNomeDono());
+        LoginLabel.setText("Seu login no sistema é: "+time.getLogin());
+
         Iterator<Jogador> it = time.getElenco().iterator();
         DefaultListModel model = new DefaultListModel();
         while(it.hasNext()){
-            Jogador jogador = it.next();
-            model.addElement(jogador.getNome() + " - "+ jogador.getIdJogador());
+            model.addElement(it.next().getNome());
         }
         Lista.setModel(model);
         revalidate();
+
+        fazerPropostaButton.setEnabled(false);
 
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -65,14 +76,6 @@ public class App extends JFrame {
             novoJogador.setVisible(true);
             novoJogador.toFront();
         });
-        alterarASenhaButton.addActionListener(e -> {
-            toBack();
-            setVisible(false);
-            TrocarSenha novaSenha = new TrocarSenha(clientSocket);
-            novaSenha.setSize(800,600);
-            novaSenha.setVisible(true);
-            novaSenha.toFront();
-        });
         sairButton.addActionListener(e -> {
             dispose();
             EscamballAppGUI novoLogin = new EscamballAppGUI();
@@ -83,25 +86,27 @@ public class App extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 JList list = (JList)e.getSource();
-                if (e.getClickCount() == 1) {
+                if (e.getClickCount() == 2) {
                     int index = list.locationToIndex(e.getPoint());
-                    System.out.println(index);
+                    Jogador jogadorEscolhido = time.getElenco().get(index);
+                    InformacoesJogador info = new InformacoesJogador(jogadorEscolhido);
+                    info.setSize(400,400);
+                    info.setVisible(true);
                 }
             }
         });
+
         pesquisaButton.addActionListener(e -> {
             if(pesquisaJogadorField.getText().equals("")){
                 JOptionPane.showMessageDialog(null, "Preencha a pesquisa.");
             }
             else{
                 try {
-                    List<Jogador> jogadores = clientSocket.ComunicaPesquisaJogador(pesquisaJogadorField.getText());
-                    Iterator<Jogador> itJog = jogadores.iterator();
+                    jogadoresPesquisados = new ArrayList<Jogador>(clientSocket.ComunicaPesquisaJogador(pesquisaJogadorField.getText()));
                     DefaultListModel modelPesquisa = new DefaultListModel();
-                    while(itJog.hasNext()){
-                        Jogador jogador = itJog.next();
-                        if(jogador.getIdTime() != time.getIdTime()){
-                            modelPesquisa.addElement(jogador.getNome() + " - "+ String.valueOf(jogador.getIdJogador()));
+                    for(Jogador j : jogadoresPesquisados){
+                        if(j.getIdTime() != time.getIdTime()){
+                            modelPesquisa.addElement("Jogador: "+j.getNome() + " - Preço: "+ j.getPreco());
                         }
                     }
                     list1.setModel(modelPesquisa);
@@ -114,35 +119,52 @@ public class App extends JFrame {
                 }
             }
         });
-        fazerPropostaButton.addActionListener(e -> {
-            if(idDeseja.getText().equals("")|| idJogadorTime.getText().equals("")){
-                JOptionPane.showMessageDialog(null, "Informe os ids");
+
+        list1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JList list = (JList)e.getSource();
+                if (e.getClickCount() == 2) {
+                    int index = list.locationToIndex(e.getPoint());
+                    jogadorEscolhido = jogadoresPesquisados.get(index);
+                    fazerPropostaButton.setEnabled(true);
+                }
             }
-            else{
+        });
+
+        fazerPropostaButton.addActionListener(e -> {
+            final JComboBox comboBox = new JComboBox<>();
+
+            for( Jogador j : time.getElenco()){
+                comboBox.addItem(j.getNome());
+            }
+
+            JOptionPane jop = new JOptionPane(comboBox, JOptionPane.QUESTION_MESSAGE,
+                    JOptionPane.OK_CANCEL_OPTION);
+            JDialog dialog = jop.createDialog("Jogador oferecido:");
+            dialog.addComponentListener(new ComponentAdapter() {
+                @Override
+                public void componentShown(ComponentEvent e) {
+                    SwingUtilities.invokeLater(comboBox::requestFocusInWindow);
+                }
+            });
+            dialog.setVisible(true);
+            int result = (Integer) jop.getValue();
+            dialog.dispose();
+
+            if(result == JOptionPane.OK_OPTION){
+                Jogador jogadorOferecido = time.getElenco().get(comboBox.getSelectedIndex());
+                Transacao transacao = new Transacao(jogadorOferecido.getIdTime(), jogadorEscolhido.getIdTime(), jogadorOferecido, jogadorEscolhido);
                 try {
-                    int idJogador = Integer.valueOf(idDeseja.getText());
-                    int idJogadorTime = Integer.valueOf(this.idJogadorTime.getText());
-                    Jogador jogadorDesejado = clientSocket.ComunicaBuscaPorId(idJogador);
-                    clientSocket = new TCPCliente();
-                    Jogador jogadorOferecido = clientSocket.ComunicaBuscaPorId(idJogadorTime);
-                    Transacao transacao = new Transacao(jogadorOferecido.getIdTime(), jogadorDesejado.getIdTime(), jogadorOferecido, jogadorDesejado);
                     clientSocket = new TCPCliente();
                     Transacao transacaoRecebida = clientSocket.ComunicaTransacao(transacao);
-                    clientSocket = new TCPCliente();
-                    System.out.println(transacaoRecebida.getCriador());
-                    System.out.println(transacaoRecebida.getReceptor());
-                    System.out.println("Jogador oferecido: " + transacao.getGrupoCriador().getNome());
-
-                    System.out.println("Jogador desejado: " + transacao.getGrupoReceptor().getNome());
-
-
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 } catch (ClassNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
-
             }
+
         });
     }
 
