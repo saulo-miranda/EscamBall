@@ -43,8 +43,6 @@ public class App extends JFrame {
 
     private List<Jogador> jogadoresPesquisados;
     private Jogador jogadorEscolhido;
-
-    private int idTransacao;
     private List<Transacao> transacoes;
     public App(Time time){
         super("Escamball");
@@ -65,7 +63,6 @@ public class App extends JFrame {
         Lista.setModel(model);
         revalidate();
 
-
         try {
             transacoes = clientSocket.ComunicaBuscaTransacoes(time);
             DefaultListModel modelPropostas = new DefaultListModel();
@@ -76,6 +73,55 @@ public class App extends JFrame {
             }
             listPropostas.setModel(modelPropostas);
             revalidate();
+
+            listPropostas.addMouseListener(new MouseAdapter() {
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                    JList list = (JList)e.getSource();
+                    if (e.getClickCount() == 2) {
+                        int index = list.locationToIndex(e.getPoint());
+                        Jogador jogadorTrocaProposto = transacoes.get(index).getGrupoCriador();
+                        InformacoesJogador info = new InformacoesJogador(jogadorTrocaProposto);
+                        info.setSize(400,400);
+                        info.setVisible(true);
+                        recusarButton.setEnabled(true);
+                        aceitarButton.setEnabled(true);
+                        recusarButton.addActionListener(rec -> {
+                            try {
+                                Transacao t = transacoes.get(index);
+                                t.setContraproposta(false);
+                                t.setFinalizada(true);
+                                clientSocket = new TCPCliente();
+                                transacoes = clientSocket.ComunicaRespostaTransacao(t);
+
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            } catch (ClassNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                        });
+                        aceitarButton.addActionListener(ac -> {
+                            try {
+                                Transacao t = transacoes.get(index);
+                                t.setContraproposta(true);
+                                t.setFinalizada(true);
+                                clientSocket = new TCPCliente();
+                                transacoes = clientSocket.ComunicaRespostaTransacao(t);
+
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            } catch (ClassNotFoundException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+                        });
+                    }
+                }
+            });
+
+
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         } catch (ClassNotFoundException e) {
@@ -85,53 +131,7 @@ public class App extends JFrame {
 
         List<Transacao> finalTransacoes = transacoes;
 
-        listPropostas.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                JList list = (JList)e.getSource();
-                if (e.getClickCount() == 2) {
-                    int index = list.locationToIndex(e.getPoint());
-                    idTransacao = index;
-                    Jogador jogadorTrocaProposto = finalTransacoes.get(index).getGrupoCriador();
-                    InformacoesJogador info = new InformacoesJogador(jogadorTrocaProposto);
-                    info.setSize(400,400);
-                    info.setVisible(true);
-                    recusarButton.setEnabled(true);
-                    aceitarButton.setEnabled(true);
-                }
-            }
-        });
 
-        recusarButton.addActionListener(e -> {
-            try {
-                Transacao t = finalTransacoes.get(idTransacao);
-                t.setContraproposta(false);
-                t.setFinalizada(true);
-                clientSocket = new TCPCliente();
-                transacoes = clientSocket.ComunicaRespostaTransacao(t);
-
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-
-        });
-        aceitarButton.addActionListener(e -> {
-            try {
-                Transacao t = finalTransacoes.get(idTransacao);
-                t.setContraproposta(true);
-                t.setFinalizada(true);
-                clientSocket = new TCPCliente();
-                transacoes = clientSocket.ComunicaRespostaTransacao(t);
-
-            } catch (IOException ex) {
-                throw new RuntimeException(ex);
-            } catch (ClassNotFoundException ex) {
-                throw new RuntimeException(ex);
-            }
-
-        });
 
 
 
@@ -255,8 +255,8 @@ public class App extends JFrame {
                 Jogador jogadorOferecido = time.getElenco().get(comboBox.getSelectedIndex());
                 Transacao transacao = new Transacao(jogadorOferecido.getIdTime(), jogadorEscolhido.getIdTime(), jogadorOferecido, jogadorEscolhido);
                 try {
-                    clientSocket = new TCPCliente();
                     Transacao transacaoRecebida = clientSocket.ComunicaTransacao(transacao);
+                    clientSocket = new TCPCliente();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 } catch (ClassNotFoundException ex) {

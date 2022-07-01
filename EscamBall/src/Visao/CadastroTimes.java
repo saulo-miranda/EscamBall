@@ -43,7 +43,7 @@ public class CadastroTimes extends JFrame {
                     Time retorno = clientSocket.ComunicacaoCadastro(time);
                     toBack();
                     setVisible(false);
-                    App app = new App(retorno);
+                    EscamballAppGUI app = new EscamballAppGUI();
                     app.setSize(800,600);
                     app.setVisible(true);
                     app.toFront();

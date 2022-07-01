@@ -436,7 +436,7 @@ public class Persistencia {
 
     public List<Transacao> historicoTransacoes(Time t) {
         String sql = "SELECT ID_TRANSACAO FROM Transacao "+
-                "WHERE ID_CRIADOR = " + t.getIdTime() + " OR ID_RECEPTOR = " + t.getIdTime() + " AND finalizada = FALSE"+
+                "WHERE ID_RECEPTOR = " + t.getIdTime() + " AND finalizada = FALSE"+
                 " ORDER BY ID_TRANSACAO DESC";
         try {
             stmt = conexaoBD.createStatement();
