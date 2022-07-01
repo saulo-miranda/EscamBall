@@ -5,11 +5,9 @@ import Controladores.Jogador;
 import Controladores.Time;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
 
 public class App extends JFrame {
     private TCPCliente clientSocket;
@@ -25,6 +23,13 @@ public class App extends JFrame {
     private JButton alterarASenhaButton;
     private JButton sairButton;
     private JList Lista;
+    private JTextField textField2;
+    private JLabel PesquisaNome;
+    private JButton pesquisaButton;
+    private JComboBox comboBox1;
+    private JButton pesquisaButton1;
+    private JList list1;
+    private JButton fazerPropostaButton;
 
     public App(Time time){
         super("Escamball");
@@ -32,24 +37,12 @@ public class App extends JFrame {
         clientSocket = new TCPCliente();
 
         Iterator<Jogador> it = time.getElenco().iterator();
+        DefaultListModel model = new DefaultListModel();
         while(it.hasNext()){
-            System.out.println(it.next().getNome());
+            model.addElement(it.next().getNome());
         }
-
-        /*
-        * TODO: Mostrar lista de jogadores
-        *
-
-        if(!time.getElenco().isEmpty()){
-            Iterator<Jogador> it = time.getElenco().iterator();
-            List<String> nomesJogadores = new ArrayList<String>();
-            while(it.hasNext()){
-                nomesJogadores.add(it.next().getNome());
-            }
-            Lista = new JList(nomesJogadores.toArray());
-        }
-
-         */
+        Lista.setModel(model);
+        revalidate();
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
@@ -65,7 +58,7 @@ public class App extends JFrame {
         alterarASenhaButton.addActionListener(e -> {
             toBack();
             setVisible(false);
-            TrocarSenha novaSenha = new TrocarSenha();
+            TrocarSenha novaSenha = new TrocarSenha(clientSocket);
             novaSenha.setSize(800,600);
             novaSenha.setVisible(true);
             novaSenha.toFront();
@@ -75,6 +68,16 @@ public class App extends JFrame {
             EscamballAppGUI novoLogin = new EscamballAppGUI();
             novoLogin.setSize(800,600);
             novoLogin.setVisible(true);
+        });
+        Lista.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JList list = (JList)e.getSource();
+                if (e.getClickCount() == 1) {
+                    int index = list.locationToIndex(e.getPoint());
+                    System.out.println(index);
+                }
+            }
         });
     }
 

@@ -50,7 +50,8 @@ public class Connection extends Thread{
         }
 
     }
-    private void Login(Object value) throws IOException, NoSuchAlgorithmException {
+
+    private void Login(Object value) throws IOException {
         try{
             Login login = (Login) value;
             System.out.println(" Login Connection: "+login.getSenha());
