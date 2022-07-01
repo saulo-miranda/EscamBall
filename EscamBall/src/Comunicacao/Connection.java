@@ -48,6 +48,9 @@ public class Connection extends Thread{
                 case BUSCA_POSICAO:
                     this.NovaBuscaPosicao(requisicao.getValue());
                     break;
+                case HISTORICO_TRANSACAO:
+                    this.HistoricoTransacao(requisicao.getValue());
+                    break;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -161,6 +164,23 @@ public class Connection extends Thread{
             List<Jogador> busca = persistencia.recuperarJogadorPelaPosicao(posicao);
             if(busca != null){
                 System.out.printf("A busca pela posicao "+ posicao+" foi efetuada com sucesso!");
+                out.writeObject(busca);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+    private void HistoricoTransacao(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            Time time = (Time) value;
+            List<Transacao> busca = persistencia.historicoTransacoes(time);
+            if(busca != null){
+                System.out.printf("A busca pelas transações de  "+ time.getNomeTime() +" foi efetuada com sucesso!");
                 out.writeObject(busca);
             } else{
                 out.writeObject(null);

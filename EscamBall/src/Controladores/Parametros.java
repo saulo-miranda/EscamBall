@@ -6,5 +6,6 @@ public enum Parametros {
     NOVO_JOGADOR,
     TRANSACAO,
     BUSCA_NOME,
-    BUSCA_POSICAO
+    BUSCA_POSICAO,
+    HISTORICO_TRANSACAO
 }
