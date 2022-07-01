@@ -160,7 +160,7 @@ public class Connection extends Thread{
             String posicao = (String) value;
             List<Jogador> busca = persistencia.recuperarJogadorPelaPosicao(posicao);
             if(busca != null){
-                System.out.printf("A busca pelo jogador "+ posicao+" foi efetuada com sucesso!");
+                System.out.printf("A busca pela posicao "+ posicao+" foi efetuada com sucesso!");
                 out.writeObject(busca);
             } else{
                 out.writeObject(null);
