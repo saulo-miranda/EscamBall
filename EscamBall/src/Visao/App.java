@@ -32,6 +32,9 @@ public class App extends JFrame {
     private JButton pesquisaButton1;
     private JList list1;
     private JButton fazerPropostaButton;
+    private JList listPropostas;
+    private JButton recusarButton;
+    private JButton aceitarButton;
 
     public App(Time time){
         super("Escamball");
