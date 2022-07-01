@@ -7,7 +7,9 @@ import Controladores.Time;
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 import java.util.Iterator;
+import java.util.List;
 
 public class App extends JFrame {
     private TCPCliente clientSocket;
@@ -23,7 +25,7 @@ public class App extends JFrame {
     private JButton alterarASenhaButton;
     private JButton sairButton;
     private JList Lista;
-    private JTextField textField2;
+    private JTextField pesquisaJogadorField;
     private JLabel PesquisaNome;
     private JButton pesquisaButton;
     private JComboBox comboBox1;
@@ -76,6 +78,26 @@ public class App extends JFrame {
                 if (e.getClickCount() == 1) {
                     int index = list.locationToIndex(e.getPoint());
                     System.out.println(index);
+                }
+            }
+        });
+        pesquisaButton.addActionListener(e -> {
+            if(pesquisaJogadorField.getText().equals("")){
+                JOptionPane.showMessageDialog(null, "Preencha a pesquisa.");
+            }
+            else{
+                try {
+                    List<Jogador> jogadores = clientSocket.ComunicaPesquisaJogador(pesquisaJogadorField.getText());
+                    Iterator<Jogador> itJog = jogadores.iterator();
+                    DefaultListModel modelPesquisa = new DefaultListModel();
+                    while(itJog.hasNext()){
+                        modelPesquisa.addElement(itJog.next().getNome());
+                    }
+                    list1.setModel(modelPesquisa);
+                    revalidate();
+                    clientSocket = new TCPCliente();
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });

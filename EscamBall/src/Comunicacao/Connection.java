@@ -42,7 +42,7 @@ public class Connection extends Thread{
                 case TRANSACAO:
                     this.NovaTransacao(requisicao.getValue());
                     break;
-                case BUSCANOME:
+                case BUSCA_NOME:
                     this.NovaBuscaNome(requisicao.getValue());
                     break;
             }

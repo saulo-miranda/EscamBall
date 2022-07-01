@@ -5,6 +5,6 @@ public enum Parametros {
     CADASTRO,
     NOVO_JOGADOR,
     TRANSACAO,
-    BUSCANOME,
-    BUSCAPOSICAO
+    BUSCA_NOME,
+    BUSCA_POSICAO
 }

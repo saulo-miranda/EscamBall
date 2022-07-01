@@ -80,7 +80,6 @@ public class TCPCliente {
     public Time ComunicacaoLogin(Login login) throws IOException {
         try {
             System.out.printf("Estou enviando o cliente "+login.getLogin()+"\n");
-            System.out.println(login.getSenha());
             Requisicao requisicao = new Requisicao(Parametros.LOGIN,  login);
 
             out.writeObject(requisicao);
@@ -142,4 +141,19 @@ public class TCPCliente {
             client.close();
         }
     }
+
+    public List<Jogador> ComunicaPesquisaJogador(String nome) throws IOException {
+        try {
+            Requisicao requisicao = new Requisicao(Parametros.BUSCA_NOME, nome);
+            out.writeObject(requisicao);
+            out.flush();
+
+            System.out.println("Enviado");
+            List<Jogador> recebido = (List<Jogador>) in.readObject();
+            return recebido;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
 }
