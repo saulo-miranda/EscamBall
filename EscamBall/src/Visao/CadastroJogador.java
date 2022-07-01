@@ -7,9 +7,15 @@ import Controladores.Posicao;
 import Controladores.Time;
 
 import javax.swing.*;
+import javax.swing.text.AbstractDocument;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DocumentFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class CadastroJogador extends JFrame {
     private JPanel mainPanel;
@@ -27,8 +33,66 @@ public class CadastroJogador extends JFrame {
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
         this.pack();
-        cadastreButton.addActionListener(e -> {
 
+        ((AbstractDocument)Idade.getDocument()).setDocumentFilter(new DocumentFilter(){
+            Pattern regEx = Pattern.compile("\\d*");
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if(!matcher.matches()){
+                    return;
+                }
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+
+        ((AbstractDocument)Preco.getDocument()).setDocumentFilter(new DocumentFilter(){
+            Pattern regEx = Pattern.compile("\\d*");
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if(!matcher.matches()){
+                    return;
+                }
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+
+        ((AbstractDocument)Defesa.getDocument()).setDocumentFilter(new DocumentFilter(){
+            Pattern regEx = Pattern.compile("\\d*");
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if(!matcher.matches()){
+                    return;
+                }
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+        ((AbstractDocument)Ataque.getDocument()).setDocumentFilter(new DocumentFilter(){
+            Pattern regEx = Pattern.compile("\\d*");
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if(!matcher.matches()){
+                    return;
+                }
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+        ((AbstractDocument)Fisico.getDocument()).setDocumentFilter(new DocumentFilter(){
+            Pattern regEx = Pattern.compile("\\d*");
+            @Override
+            public void replace(FilterBypass fb, int offset, int length, String text, AttributeSet attrs) throws BadLocationException {
+                Matcher matcher = regEx.matcher(text);
+                if(!matcher.matches()){
+                    return;
+                }
+                super.replace(fb, offset, length, text, attrs);
+            }
+        });
+
+        cadastreButton.addActionListener(e -> {
             String posicaoString = (String) Posicao.getSelectedItem();
             if(Nome.getText().equals("")
             || Idade.getText().equals("")
