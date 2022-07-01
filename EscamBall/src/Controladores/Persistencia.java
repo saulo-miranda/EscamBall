@@ -258,10 +258,31 @@ public class Persistencia {
             }
             return  elenco;
         }catch (SQLException e) {
-            return null;
+            throw new RuntimeException(e);
         }
     }
 
+    public List<Jogador> recuperarJogadorPelaPosicao(String posicao) {
+        String sql = "SELECT ID_JOGADOR, nome FROM Jogador "+
+                "WHERE ID_TIME > 0 AND " + posicao + " = TRUE;";
+        try {
+            stmt = conexaoBD.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            List<Integer> resultado = new ArrayList<>();
+            List<Jogador> elenco = new ArrayList<>();
+            while (rs.next()) {
+                if(rs.getMetaData().getColumnCount() != 2){ continue;}
+                int j = rs.getInt(1);
+                resultado.add(j);
+            }
+            for(int id: resultado){
+                elenco.add(this.recuperarJogador(id));
+            }
+            return  elenco;
+        }catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     public int inserirTime(Time t){
         System.out.println(t.getSenha());

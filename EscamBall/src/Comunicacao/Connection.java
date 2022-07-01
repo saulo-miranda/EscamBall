@@ -45,6 +45,9 @@ public class Connection extends Thread{
                 case BUSCA_NOME:
                     this.NovaBuscaNome(requisicao.getValue());
                     break;
+                case BUSCA_POSICAO:
+                    this.NovaBuscaPosicao(requisicao.getValue());
+                    break;
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -139,7 +142,25 @@ public class Connection extends Thread{
             String nome = (String) value;
             List<Jogador> busca = persistencia.recuperarJogadorPeloNome(nome);
             if(busca != null){
-                System.out.printf("A busca pelo jogador "+ nome+"foi efetuada com sucesso!");
+                System.out.printf("A busca pelo jogador "+ nome+" foi efetuada com sucesso!");
+                out.writeObject(busca);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+    private void NovaBuscaPosicao(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            String posicao = (String) value;
+            List<Jogador> busca = persistencia.recuperarJogadorPelaPosicao(posicao);
+            if(busca != null){
+                System.out.printf("A busca pelo jogador "+ posicao+" foi efetuada com sucesso!");
                 out.writeObject(busca);
             } else{
                 out.writeObject(null);
