@@ -354,6 +354,7 @@ public class Persistencia {
             ps.execute();
             ResultSet retorno = stmt.executeQuery("SELECT MAX(ID_TRANSACAO) AS max_id FROM Transacao");
             int ID =  retorno.getInt("max_id");
+
             System.out.println("SUCESSO: inserir Transacao no SQLite!");
             return ID;
         } catch (SQLException e) {

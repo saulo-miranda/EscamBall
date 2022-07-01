@@ -51,6 +51,10 @@ public class Connection extends Thread{
                 case HISTORICO_TRANSACAO:
                     this.HistoricoTransacao(requisicao.getValue());
                     break;
+                case BUSCA_ID:
+                    this.BuscaJogadorPorId(requisicao.getValue());
+                    break;
+
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -62,7 +66,26 @@ public class Connection extends Thread{
 
     }
 
-    private void Login(Object value) throws IOException {
+    private void BuscaJogadorPorId(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            Integer idJogador = (Integer) value;
+            Jogador jogador = persistencia.recuperarJogador(idJogador);
+            if(jogador!=null){
+                out.writeObject(jogador);
+            }
+            else{
+                out.writeObject(null);
+            }
+            out.flush();
+        }finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+
+    private void Login(Object value) throws IOException, NoSuchAlgorithmException {
         try{
             Login login = (Login) value;
             System.out.println(" Login Connection: "+login.getSenha());
@@ -76,8 +99,6 @@ public class Connection extends Thread{
                 out.writeObject(null);
             }
             out.flush();
-        }catch (NoSuchAlgorithmException e){
-            throw new RuntimeException(e);
         }finally {
             in.close();
             out.close();
@@ -128,7 +149,8 @@ public class Connection extends Thread{
             int insert = persistencia.inserirTransacao(transacao);
             if(insert > 0){
                 System.out.printf("A transacao com ID = "+ insert +" foi inserido com sucesso!");
-                out.writeObject(insert);
+                Transacao retorno = persistencia.recuperarTransacao(insert);
+                out.writeObject(retorno);
             } else{
                 out.writeObject(null);
             }

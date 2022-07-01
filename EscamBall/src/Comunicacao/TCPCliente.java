@@ -142,7 +142,7 @@ public class TCPCliente {
         }
     }
 
-    public List<Jogador> ComunicaPesquisaJogador(String nome) throws IOException {
+    public List<Jogador> ComunicaPesquisaJogador(String nome) throws IOException, ClassNotFoundException {
         try {
             Requisicao requisicao = new Requisicao(Parametros.BUSCA_NOME, nome);
             out.writeObject(requisicao);
@@ -151,8 +151,39 @@ public class TCPCliente {
             System.out.println("Enviado");
             List<Jogador> recebido = (List<Jogador>) in.readObject();
             return recebido;
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
+        } finally {
+            out.close();
+            in.close();
+            client.close();
+        }
+    }
+
+    public Transacao ComunicaTransacao(Transacao transacao) throws IOException, ClassNotFoundException {
+        try{
+            Requisicao requisicao = new Requisicao(Parametros.TRANSACAO, transacao);
+            out.writeObject(requisicao);
+            out.flush();
+            System.out.println("Enviado");
+            Transacao recebido = (Transacao) in.readObject();
+            return recebido;
+        }finally {
+            in.close();
+            out.close();
+            client.close();
+        }
+    }
+    public Jogador ComunicaBuscaPorId(int idJogador) throws IOException, ClassNotFoundException {
+        try{
+            Requisicao requisicao = new Requisicao(Parametros.BUSCA_ID, idJogador);
+            out.writeObject(requisicao);
+            out.flush();
+            System.out.println("Enviado");
+            Jogador recebido = (Jogador) in.readObject();
+            return recebido;
+        }finally {
+            in.close();
+            out.close();
+            client.close();
         }
     }
 

@@ -7,5 +7,5 @@ public enum Parametros {
     TRANSACAO,
     BUSCA_NOME,
     BUSCA_POSICAO,
-    HISTORICO_TRANSACAO
+    BUSCA_ID, HISTORICO_TRANSACAO
 }

@@ -3,6 +3,7 @@ package Visao;
 import Comunicacao.TCPCliente;
 import Controladores.Jogador;
 import Controladores.Time;
+import Controladores.Transacao;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
@@ -35,6 +36,8 @@ public class App extends JFrame {
     private JList listPropostas;
     private JButton recusarButton;
     private JButton aceitarButton;
+    private JTextField idDeseja;
+    private JTextField idJogadorTime;
 
     public App(Time time){
         super("Escamball");
@@ -44,10 +47,12 @@ public class App extends JFrame {
         Iterator<Jogador> it = time.getElenco().iterator();
         DefaultListModel model = new DefaultListModel();
         while(it.hasNext()){
-            model.addElement(it.next().getNome());
+            Jogador jogador = it.next();
+            model.addElement(jogador.getNome() + " - "+ jogador.getIdJogador());
         }
         Lista.setModel(model);
         revalidate();
+
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setContentPane(mainPanel);
@@ -94,14 +99,49 @@ public class App extends JFrame {
                     Iterator<Jogador> itJog = jogadores.iterator();
                     DefaultListModel modelPesquisa = new DefaultListModel();
                     while(itJog.hasNext()){
-                        modelPesquisa.addElement(itJog.next().getNome());
+                        Jogador jogador = itJog.next();
+                        if(jogador.getIdTime() != time.getIdTime()){
+                            modelPesquisa.addElement(jogador.getNome() + " - "+ String.valueOf(jogador.getIdJogador()));
+                        }
                     }
                     list1.setModel(modelPesquisa);
                     revalidate();
                     clientSocket = new TCPCliente();
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
                 }
+            }
+        });
+        fazerPropostaButton.addActionListener(e -> {
+            if(idDeseja.getText().equals("")|| idJogadorTime.getText().equals("")){
+                JOptionPane.showMessageDialog(null, "Informe os ids");
+            }
+            else{
+                try {
+                    int idJogador = Integer.valueOf(idDeseja.getText());
+                    int idJogadorTime = Integer.valueOf(this.idJogadorTime.getText());
+                    Jogador jogadorDesejado = clientSocket.ComunicaBuscaPorId(idJogador);
+                    clientSocket = new TCPCliente();
+                    Jogador jogadorOferecido = clientSocket.ComunicaBuscaPorId(idJogadorTime);
+                    Transacao transacao = new Transacao(jogadorOferecido.getIdTime(), jogadorDesejado.getIdTime(), jogadorOferecido, jogadorDesejado);
+                    clientSocket = new TCPCliente();
+                    Transacao transacaoRecebida = clientSocket.ComunicaTransacao(transacao);
+                    clientSocket = new TCPCliente();
+                    System.out.println(transacaoRecebida.getCriador());
+                    System.out.println(transacaoRecebida.getReceptor());
+                    System.out.println("Jogador oferecido: " + transacao.getGrupoCriador().getNome());
+
+                    System.out.println("Jogador desejado: " + transacao.getGrupoReceptor().getNome());
+
+
+                } catch (IOException ex) {
+                    throw new RuntimeException(ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+
             }
         });
     }

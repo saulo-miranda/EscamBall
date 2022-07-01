@@ -1,8 +1,9 @@
 package Controladores;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class Transacao {
+public class Transacao implements Serializable {
     private int IdTransacao;
     private int Criador;
     private int Receptor;
