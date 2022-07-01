@@ -240,6 +240,29 @@ public class Persistencia {
         }
     }
 
+    public List<Jogador> recuperarJogadorPeloNome(String nome) {
+        String sql = "SELECT ID_JOGADOR, nome FROM Jogador "+
+                "WHERE ID_TIME > 0 AND nome LIKE '%" + nome + "%';";
+        try {
+            stmt = conexaoBD.createStatement();
+            ResultSet rs = stmt.executeQuery(sql);
+            List<Integer> resultado = new ArrayList<>();
+            List<Jogador> elenco = new ArrayList<>();
+            while (rs.next()) {
+                if(rs.getMetaData().getColumnCount() != 2){ continue;}
+                int j = rs.getInt(1);
+                resultado.add(j);
+            }
+            for(int id: resultado){
+                elenco.add(this.recuperarJogador(id));
+            }
+            return  elenco;
+        }catch (SQLException e) {
+            return null;
+        }
+    }
+
+
     public int inserirTime(Time t){
         System.out.println(t.getSenha());
         String sql = "INSERT INTO Time( nome_time, nome_dono, login, senha) " +

@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.Socket;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.List;
+
 import Controladores.*;
 public class Connection extends Thread{
     private ObjectOutputStream out;
@@ -39,6 +41,9 @@ public class Connection extends Thread{
                     break;
                 case TRANSACAO:
                     this.NovaTransacao(requisicao.getValue());
+                    break;
+                case BUSCANOME:
+                    this.NovaBuscaNome(requisicao.getValue());
                     break;
             }
         } catch (IOException e) {
@@ -118,6 +123,24 @@ public class Connection extends Thread{
             if(insert > 0){
                 System.out.printf("A transacao com ID = "+ insert +" foi inserido com sucesso!");
                 out.writeObject(insert);
+            } else{
+                out.writeObject(null);
+            }
+            out.flush();
+        } finally {
+            in.close();
+            out.close();
+            clientSocket.close();
+        }
+    }
+
+    private void NovaBuscaNome(Object value) throws IOException, NoSuchAlgorithmException {
+        try{
+            String nome = (String) value;
+            List<Jogador> busca = persistencia.recuperarJogadorPeloNome(nome);
+            if(busca != null){
+                System.out.printf("A busca pelo jogador "+ nome+"foi efetuada com sucesso!");
+                out.writeObject(busca);
             } else{
                 out.writeObject(null);
             }
