@@ -141,6 +141,8 @@ public class CadastroJogador extends JFrame {
 
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
                 }
 
             }

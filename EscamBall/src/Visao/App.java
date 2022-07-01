@@ -50,9 +50,12 @@ public class App extends JFrame {
         super("Escamball");
 
         clientSocket = new TCPCliente();
+        fazerPropostaButton.setEnabled(false);
+        recusarButton.setEnabled(false);
+        aceitarButton.setEnabled(false);
 
         BoasVindasLabel.setText("Olá "+time.getNomeDono());
-        LoginLabel.setText("Seu login no sistema é: "+time.getLogin());
+        LoginLabel.setText("Seu time é o: "+time.getLogin());
 
         Iterator<Jogador> it = time.getElenco().iterator();
         DefaultListModel model = new DefaultListModel();
@@ -61,8 +64,42 @@ public class App extends JFrame {
         }
         Lista.setModel(model);
         revalidate();
+        List<Transacao> transacoes = null;
+        try {
+            transacoes = clientSocket.ComunicaBuscaTransacoes(time);
+            DefaultListModel modelPropostas = new DefaultListModel();
+            for (Transacao t: transacoes){
+                if(t.getGrupoReceptor().getIdTime() == time.getIdTime()){
+                    modelPropostas.addElement("Proposta: Jogador "+ t.getGrupoReceptor().getNome() + " por: "+ t.getGrupoCriador().getNome());
+                }
+            }
+            listPropostas.setModel(modelPropostas);
+            revalidate();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        clientSocket = new TCPCliente();
 
-        fazerPropostaButton.setEnabled(false);
+        List<Transacao> finalTransacoes = transacoes;
+        listPropostas.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JList list = (JList)e.getSource();
+                if (e.getClickCount() == 2) {
+                    int index = list.locationToIndex(e.getPoint());
+                    Jogador jogadorEscolhido = finalTransacoes.get(index).getGrupoCriador();
+                    InformacoesJogador info = new InformacoesJogador(jogadorEscolhido);
+                    info.setSize(400,400);
+                    info.setVisible(true);
+                    recusarButton.setEnabled(true);
+                    aceitarButton.setEnabled(true);
+                }
+            }
+        });
+
+
 
 
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -117,6 +154,35 @@ public class App extends JFrame {
                 } catch (ClassNotFoundException ex) {
                     throw new RuntimeException(ex);
                 }
+            }
+        });
+
+        pesquisaButton1.addActionListener(e -> {
+            String saidaCombobox = null;
+            if(comboBox1.getSelectedItem().equals("Goleiro")){
+                saidaCombobox = "goleiro";
+            }else if(comboBox1.getSelectedItem().equals("Defensor")){
+                saidaCombobox = "zagueiro";
+            }else if(comboBox1.getSelectedItem().equals("Meio")){
+                saidaCombobox = "meio_campo";
+            }else if(comboBox1.getSelectedItem().equals("Atacante")){
+                saidaCombobox = "atacante";
+            }
+            try {
+                jogadoresPesquisados = new ArrayList<Jogador>(clientSocket.ComunicaPesquisaPosicao(saidaCombobox));
+                DefaultListModel modelPesquisa = new DefaultListModel();
+                for(Jogador j : jogadoresPesquisados){
+                    if(j.getIdTime() != time.getIdTime()){
+                        modelPesquisa.addElement("Jogador: "+j.getNome() + " - Preço: "+ j.getPreco());
+                    }
+                }
+                list1.setModel(modelPesquisa);
+                revalidate();
+                clientSocket = new TCPCliente();
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            } catch (ClassNotFoundException ex) {
+                throw new RuntimeException(ex);
             }
         });
 

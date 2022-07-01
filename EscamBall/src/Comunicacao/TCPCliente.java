@@ -77,7 +77,7 @@ public class TCPCliente {
     public void setIn(ObjectInputStream in) {
         this.in = in;
     }
-    public Time ComunicacaoLogin(Login login) throws IOException {
+    public Time ComunicacaoLogin(Login login) throws IOException, ClassNotFoundException {
         try {
             System.out.printf("Estou enviando o cliente "+login.getLogin()+"\n");
             Requisicao requisicao = new Requisicao(Parametros.LOGIN,  login);
@@ -90,17 +90,14 @@ public class TCPCliente {
             Time recebido = (Time) in.readObject();
             return recebido;
 
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        finally {
+        } finally {
             out.close();
             in.close();
             client.close();
         }
     }
 
-    public Time ComunicacaoCadastro(Time time) throws IOException {
+    public Time ComunicacaoCadastro(Time time) throws IOException,ClassNotFoundException {
         try {
             System.out.printf("Estou cadastrando o time "+time.getNomeTime()+"\n");
             Requisicao requisicao = new Requisicao(Parametros.CADASTRO,  time);
@@ -112,8 +109,6 @@ public class TCPCliente {
             Time recebido = (Time) in.readObject();
             return recebido;
 
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }
         finally {
             out.close();
@@ -121,7 +116,7 @@ public class TCPCliente {
             client.close();
         }
     }
-    public Jogador ComunicacaoNovoJogador(Jogador jogador) throws IOException {
+    public Jogador ComunicacaoNovoJogador(Jogador jogador) throws IOException, ClassNotFoundException {
         try{
             System.out.println("Estou cadastrando o jogador: "+ jogador.getNome());
             Requisicao requisicao = new Requisicao(Parametros.NOVO_JOGADOR,  jogador);
@@ -133,8 +128,6 @@ public class TCPCliente {
             Jogador recebido = (Jogador) in.readObject();
             return recebido;
 
-        }catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
         }finally {
             out.close();
             in.close();
@@ -179,6 +172,36 @@ public class TCPCliente {
             out.flush();
             System.out.println("Enviado");
             Jogador recebido = (Jogador) in.readObject();
+            return recebido;
+        }finally {
+            in.close();
+            out.close();
+            client.close();
+        }
+    }
+
+    public List<Jogador> ComunicaPesquisaPosicao(String posicao) throws IOException, ClassNotFoundException {
+        try{
+            Requisicao requisicao = new Requisicao(Parametros.BUSCA_POSICAO, posicao);
+            out.writeObject(requisicao);
+            out.flush();
+            System.out.println("Enviado");
+            List<Jogador> recebido = (List<Jogador>) in.readObject();
+            return recebido;
+        }finally {
+            in.close();
+            out.close();
+            client.close();
+        }
+    }
+
+    public List<Transacao> ComunicaBuscaTransacoes(Time time) throws IOException, ClassNotFoundException {
+        try{
+            Requisicao requisicao = new Requisicao(Parametros.HISTORICO_TRANSACAO, time);
+            out.writeObject(requisicao);
+            out.flush();
+            System.out.println("Enviado");
+            List<Transacao> recebido = (List<Transacao>) in.readObject();
             return recebido;
         }finally {
             in.close();

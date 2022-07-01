@@ -53,6 +53,8 @@ public class EscamballAppGUI extends JFrame{
                     }
                 } catch (IOException ex) {
                     System.out.println(ex);
+                } catch (ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
                 }
             }
         });
