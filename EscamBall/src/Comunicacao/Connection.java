@@ -223,9 +223,11 @@ public class Connection extends Thread{
             Transacao transacao = (Transacao) value;
             boolean update = persistencia.alterarTransacao(transacao);
 
+            List<Transacao> t = persistencia.historicoTransacoes(persistencia.recuperarTime(transacao.getReceptor()));
+
             if(update){
                 System.out.printf("A transação "+ transacao.getIdTransacao()+" foi atualizada com sucesso!");
-                out.writeObject(update);
+                out.writeObject(t);
             } else{
                 out.writeObject(null);
             }

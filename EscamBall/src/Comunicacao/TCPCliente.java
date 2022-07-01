@@ -210,4 +210,19 @@ public class TCPCliente {
         }
     }
 
+    public List<Transacao> ComunicaRespostaTransacao(Transacao transacao) throws IOException, ClassNotFoundException {
+        try{
+            Requisicao requisicao = new Requisicao(Parametros.RESPONDER_TRANSACAO, transacao);
+            out.writeObject(requisicao);
+            out.flush();
+            System.out.println("Enviado");
+            List<Transacao> recebido = (List<Transacao>) in.readObject();
+            return recebido;
+        }finally {
+            in.close();
+            out.close();
+            client.close();
+        }
+    }
+
 }

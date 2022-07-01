@@ -410,7 +410,7 @@ public class Persistencia {
     public boolean alterarTransacao(Transacao t){
         String sql = "UPDATE Transacao "+
                 "SET finalizada = " + true + " , " +
-                "SET contraproposta = " + t.isContraproposta() +
+                " contraproposta = " + t.isContraproposta() +
                 " WHERE ID_TRANSACAO = "+ t.getIdTransacao() + ";";
         String sqlTroca1 =  "UPDATE Jogador "+
                 "SET ID_TIME = " + t.getReceptor() +
@@ -421,6 +421,7 @@ public class Persistencia {
         try {
             stmt.execute(sql);
             boolean retorno = stmt.execute(sql);
+            System.out.println(retorno);
             if(t.isContraproposta()){
                 stmt.execute(sqlTroca1);
                 stmt.execute(sqlTroca2);
@@ -428,14 +429,14 @@ public class Persistencia {
             System.out.println("SUCESSO: alterar Transação no SQLite!");
             return true;
         } catch (SQLException e) {
-            System.out.println("Erro ao alterar Transação no SQLite!");
+            System.out.println(e);
             return false;
         }
     }
 
     public List<Transacao> historicoTransacoes(Time t) {
         String sql = "SELECT ID_TRANSACAO FROM Transacao "+
-                "WHERE ID_CRIADOR = " + t.getIdTime() + " OR ID_RECEPTOR = " + t.getIdTime() +
+                "WHERE ID_CRIADOR = " + t.getIdTime() + " OR ID_RECEPTOR = " + t.getIdTime() + " AND finalizada = FALSE"+
                 " ORDER BY ID_TRANSACAO DESC";
         try {
             stmt = conexaoBD.createStatement();
