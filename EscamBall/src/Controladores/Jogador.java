@@ -51,6 +51,10 @@ public class Jogador implements Serializable {
         return IdTime;
     }
 
+    public String getFoto() {
+        return foto;
+    }
+
     //SET
     public void setNome(String nome) {
         Nome = nome;
@@ -86,6 +90,9 @@ public class Jogador implements Serializable {
 
     public void setIdTime(int idTime) {
         IdTime = idTime;
+    }
+    public void setFoto(String foto) {
+        this.foto = foto;
     }
 
     public void resumo(){
