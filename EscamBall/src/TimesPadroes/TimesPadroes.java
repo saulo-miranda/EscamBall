@@ -56,7 +56,7 @@ public class TimesPadroes {
         return new Jogador(nome, idade, escolhePosicao(posicao), preco, definePontuacao(ataque, defesa, fisico), idTime);
     }
     private List<Jogador> geraElencoRealMadrid(){
-        int idTime = RealMadrid.getIdTime();
+        int idTime = 1;
         List<Jogador> listReal = new ArrayList<>(12);
         listReal.add(novoJogador("Courtois", 30, "Goleiro", 60000, 20,95,85,idTime));
         listReal.add(novoJogador("Éder Militão", 24, "Defensor", 60000, 40,85,75,idTime));
@@ -75,7 +75,7 @@ public class TimesPadroes {
     }
 
     private List<Jogador> geraElencoPSG(){
-        int idTime = ParisSaintGermain.getIdTime();
+        int idTime = 2;
 
         List<Jogador> listPSG = new ArrayList<>(12);
         listPSG.add(novoJogador("Donnarumma", 23, "Goleiro", 50000, 20,95,85,idTime));

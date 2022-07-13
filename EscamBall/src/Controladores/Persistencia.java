@@ -1,5 +1,6 @@
 package Controladores;
 
+import TimesPadroes.TimesPadroes;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.sql.Connection;
@@ -10,15 +11,28 @@ public class Persistencia {
     private Connection conexaoBD;
     private Statement stmt;
 
-    private String BD;
+    private final String BD;
 
     public Persistencia(String bd){
         BD = bd;
         this.conectar();
         this.criarTabela();
+        TimesPadroes timesPadroes = new TimesPadroes();
+        int idReal = this.inserirTime(timesPadroes.getRealMadrid());
+        int idPsg = this.inserirTime(timesPadroes.getParisSaintGermain());
+        if(idReal != -1){
+            for(Jogador jRM : timesPadroes.getRealMadrid().getElenco()){
+                inserirJogador(jRM);
+            }
+        }
+        if(idPsg != -1){
+            for(Jogador jPSG : timesPadroes.getParisSaintGermain().getElenco()){
+                inserirJogador(jPSG);
+            }
+        }
     }
     private void conectar(){
-        Connection con = null;
+        Connection con;
         try {
             Class.forName("org.sqlite.JDBC");
             con = DriverManager.getConnection("jdbc:sqlite:"+BD);
@@ -219,7 +233,7 @@ public class Persistencia {
     }
 
     public Jogador recuperarJogador(int ID){
-        Jogador j = new Jogador("0", 99, new Posicao(false, false, false, false), 0, new Pontuacao(0,0,0), 0);
+        Jogador j;
         String sql = "SELECT nome, idade, preco, ID_PONTUACAO, ID_POSICAO, ID_TIME, ID_JOGADOR FROM Jogador " +
                 " WHERE ID_JOGADOR = " + ID + ";";
         try {
@@ -307,7 +321,6 @@ public class Persistencia {
     }
 
     public int inserirTime(Time t){
-        System.out.println(t.getSenha());
         String sql = "INSERT INTO Time( nome_time, nome_dono, login, senha) " +
                 "VALUES('"+t.getNomeTime()+"','"+t.getNomeDono()+"','"+t.getLogin()+
                 "','"+t.getSenha()+
@@ -429,7 +442,6 @@ public class Persistencia {
             System.out.println("SUCESSO: alterar Transação no SQLite!");
             return true;
         } catch (SQLException e) {
-            System.out.println(e);
             return false;
         }
     }
