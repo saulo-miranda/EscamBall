@@ -65,6 +65,9 @@ public class Time implements Serializable{
     public void setSenha(String senha)  {
         Senha = senha;
     }
+    public void setElenco(List<Jogador> elenco) {
+        Elenco = elenco;
+    }
 
     public List<Jogador> getElenco() {
         return Elenco;

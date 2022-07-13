@@ -1,6 +1,7 @@
 package Visao;
 
 import Controladores.*;
+import TimesPadroes.TimesPadroes;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -45,8 +46,10 @@ public class AppFrame extends JFrame{
         setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         setSize(900,600);
         setVisible(true);
+        //TODO: Alterar para chamada do banco
+        //Time t = new TimesPadroes().getRealMadrid();
+        Time t = new TimesPadroes().getParisSaintGermain();
 
-        Time t = SetTime();
         SetInformacoes(t);
 
         sairButton.addActionListener(e->{
