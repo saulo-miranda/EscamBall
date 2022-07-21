@@ -101,6 +101,7 @@ public class AppFrame extends JFrame {
             String nomePesquisado = textField1.getText();
             if(!nomePesquisado.equals("")){
                 client.BuscaJogadoresPeloNome(nomePesquisado);
+                jogadoresPesquisa = new ArrayList<>();
                 for(JogadorModel j : client.getJogadores()){
                     if(j.getIdTime()!=idTime){
                         jogadoresPesquisa.add(j);
@@ -112,6 +113,7 @@ public class AppFrame extends JFrame {
         pesquisaButton1.addActionListener(e -> {
             String posicaoPesquisada = (String) comboBox1.getSelectedItem();
             client.BuscaJogadorPelaPosicao(posicaoPesquisada);
+            jogadoresPesquisa = new ArrayList<>();
             for(JogadorModel j : client.getJogadores()){
                 if(j.getIdTime()!=idTime){
                     jogadoresPesquisa.add(j);
