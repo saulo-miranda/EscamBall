@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="google.android.annotations" type="repository">
+    <properties maven-id="com.google.android:annotations:4.1.1.4" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/annotations-4.1.1.4.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

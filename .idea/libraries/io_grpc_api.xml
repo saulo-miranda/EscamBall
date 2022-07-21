@@ -1,0 +1,19 @@
+<component name="libraryTable">
+  <library name="io.grpc.api" type="repository">
+    <properties maven-id="io.grpc:grpc-api:1.29.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/grpc-api-1.29.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/grpc-context-1.29.0.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/error_prone_annotations-2.3.4.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/jsr305-3.0.2.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/animal-sniffer-annotations-1.18.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/guava-28.2-android.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/failureaccess-1.0.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/checker-compat-qual-2.5.5.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/j2objc-annotations-1.3.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

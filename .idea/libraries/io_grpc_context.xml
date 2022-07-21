@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="io.grpc.context" type="repository">
+    <properties maven-id="io.grpc:grpc-context:1.29.0" />
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/grpc-context-1.29.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

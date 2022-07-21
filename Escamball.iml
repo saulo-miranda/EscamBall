@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="sqlite-jdbc-3.36.0.3" level="project" />
+    <orderEntry type="library" name="google.code.gson" level="project" />
+    <orderEntry type="library" name="google.android.annotations" level="project" />
+    <orderEntry type="library" name="google.api.grpc.proto.common.protos" level="project" />
+    <orderEntry type="library" name="javax.annotation.api" level="project" />
+    <orderEntry type="library" name="google.code.findbugs.jsr305" level="project" />
+    <orderEntry type="library" name="google.errorprone.error_prone_annotations" level="project" />
+    <orderEntry type="library" name="google.guava.failureaccess" level="project" />
+    <orderEntry type="library" name="google.j2objc.annotations" level="project" />
+    <orderEntry type="library" name="io.grpc.api" level="project" />
+    <orderEntry type="library" name="io.grpc.context" level="project" />
+    <orderEntry type="library" name="io.grpc.core" level="project" />
+    <orderEntry type="library" name="io.grpc.netty.shaded" level="project" />
+    <orderEntry type="library" name="io.grpc.protobuf.lite" level="project" />
+    <orderEntry type="library" name="io.grpc.protobuf" level="project" />
+    <orderEntry type="library" name="io.grpc.stub" level="project" />
+    <orderEntry type="library" name="io.perfmark.api" level="project" />
+  </component>
+</module>
