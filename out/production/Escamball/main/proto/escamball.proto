@@ -1,0 +1,162 @@
+syntax = "proto3";
+package proto;
+
+option java_multiple_files = true;
+option java_package = "main.java.generated";
+option java_outer_classname = "EscamballProtos";
+
+service escamball {
+
+  //Cadastro no banco
+  rpc cadastro(CadastroRequest) returns (APIResponse);
+  rpc cadastroJogador(CadastroJogadorRequest) returns (APIResponse);
+  rpc novaTransacao(TransacaoRequest) returns (APIResponse);
+
+  //Atualização no banco de dados
+  rpc responderTransacao(RespostaTransacaoRequest) returns (APIResponse);
+
+  //Recuperação do time
+  rpc login(LoginRequest) returns (TimeResponse);
+  rpc recuperaTimePeloId(PesquisaPorIdTimeRequest) returns (TimeResponse);
+
+  //Recuperação do Jogador
+  rpc recuperaJogadorPeloId(PesquisaPorIdJogadorRequest) returns (JogadorResponse);
+
+  //Recuperacao da transacao
+  rpc recuperaTransacaoPeloId(PesquisaPorIdTransacaoRequest) returns (TransacaoResponse);
+
+  //Funções que resgatam listas de jogadores
+  rpc buscaJogadoresNome(BuscaJogadoresRequest) returns (ListaJogadoresResponse);
+  rpc buscaJogadoresPosicao(BuscaJogadoresPosicaoRequest) returns (ListaJogadoresResponse);
+  rpc exibeListaJogadores(PesquisaPorIdTimeRequest) returns (ListaJogadoresResponse);
+
+  //Função para resgate da lista de transações
+  rpc historicoTransacoes(PesquisaPorIdTimeRequest) returns (ListaTransacaoResponse);
+
+}
+
+//Requests
+
+message CadastroRequest {
+  string nomeDono = 1;
+  string nomeTime = 2;
+  string login = 3;
+  string senha = 4;
+}
+
+message CadastroJogadorRequest {
+  string nomeJogador = 1;
+  int32 idadeJogador = 2;
+  int64 preco = 3;
+  Posicao posicao = 4;
+  Pontuacao pontuacao = 5;
+  int32 idTime = 6;
+}
+
+message TransacaoRequest {
+  int32 idTimeProposta = 1;
+  int32 idTimeReceptor = 2;
+  int32 idJogadorProposto = 3;
+  int32 idJogadorDesejado = 4;
+}
+
+message RespostaTransacaoRequest {
+  int32 idTransacao = 1;
+  bool aceite = 2;
+}
+
+message LoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message BuscaJogadoresRequest {
+  string nomeJogador = 1;
+}
+
+message BuscaJogadoresPosicaoRequest{
+  Posicao posicao = 1;
+}
+
+message PesquisaPorIdTimeRequest {
+  int32 idTime = 1;
+}
+
+message PesquisaPorIdJogadorRequest {
+  int32 idJogador = 1;
+}
+
+message PesquisaPorIdTransacaoRequest {
+  int32 idTransacao = 1;
+}
+
+//Responses
+
+message APIResponse {
+  string responseMessage = 1;
+  int32 responseCode = 2 ;
+  int32 idCadastrado = 3;
+}
+
+message TimeResponse {
+  string responseMessage = 1;
+  Time time = 2;
+}
+
+message JogadorResponse {
+  string responseMessage = 1;
+  Jogador jogador = 2;
+}
+
+message ListaJogadoresResponse {
+  string responseMessage = 1;
+  repeated Jogador jogadores = 2;
+}
+
+message ListaTransacaoResponse {
+  string responseMessage = 1;
+  repeated TransacaoJogador transacoes = 2;
+}
+
+message TransacaoResponse {
+  string responseMessage = 1;
+  TransacaoJogador transacao = 2;
+}
+
+//Estruturas auxiliares
+
+message Posicao {
+  bool goleiro = 1;
+  bool defensor = 2;
+  bool meia = 3;
+  bool atacante = 4;
+}
+
+message Pontuacao {
+  int32 ataque = 1;
+  int32 defesa = 2;
+  int32 fisico = 3;
+}
+
+message Time{
+  int32 idTime = 1;
+  CadastroRequest time = 2;
+}
+
+message Jogador {
+  int32 idJogador = 1;
+  CadastroJogadorRequest jogador = 2;
+}
+
+message Transacao {
+  int32 idTransacao = 1;
+  TransacaoRequest transacao = 2;
+}
+
+message TransacaoJogador {
+  int32 idTransacao = 1;
+  int32 idTimeProposto = 2;
+  int32 idTimeReceptor = 3;
+  Jogador jogadorProposto = 4;
+  Jogador jogadorDesejado = 5;
+}
