@@ -5,6 +5,7 @@ package main.java;
 
 import main.java.Communication.EscamballService;
 import main.java.Models.TimeModel;
+import main.java.Models.TransacaoModel;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -27,8 +28,8 @@ public class MainClient {
             //JogadorModel j = escamballService.CadastroJogador("A", 12, 12, 12,12,12, "ATACANTE", 2);
             //System.out.println(j.getJogadorId());
 
-            //TransacaoModel tr = escamballService.CadastroTransacao(1,2,2,4);
-            //System.out.println(tr.getTransacaoId());
+            TransacaoModel tr = escamballService.CadastroTransacao(1,2,2,4);
+            System.out.println(tr.getTransacaoId());
 
             //t = escamballService.RespostaTransacao(t.getTransacaoId(), true);
 
