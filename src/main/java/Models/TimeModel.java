@@ -1,11 +1,14 @@
 package main.java.Models;
 
+import java.util.List;
+
 public class TimeModel {
     private int timeId;
     private String nomeDono;
     private String nomeTime;
     private String login;
     private String senha;
+    private List<JogadorModel> jogadores;
 
     public TimeModel() {
     }
@@ -48,5 +51,13 @@ public class TimeModel {
 
     public void setSenha(String senha) {
         this.senha = senha;
+    }
+
+    public List<JogadorModel> getJogadores() {
+        return jogadores;
+    }
+
+    public void setJogadores(List<JogadorModel> jogadores) {
+        this.jogadores = jogadores;
     }
 }
