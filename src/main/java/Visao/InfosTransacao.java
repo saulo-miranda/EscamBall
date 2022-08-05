@@ -99,7 +99,6 @@ public class InfosTransacao extends JFrame {
                         "</center>" +
                         "</html>"
         );
-
         setImage(imgJgA);
         setImage(imgJgB);
 
@@ -126,7 +125,6 @@ public class InfosTransacao extends JFrame {
 
         geralJgA.setText(String.valueOf(jP.getGeral()));
         geralJgB.setText(String.valueOf(jD.getGeral()));
-
     }
 
     private void setImage(JLabel imagemJogador) {

@@ -41,7 +41,7 @@ public class AppFrame extends JFrame {
     private JList list1;
     private JButton fazerPropostaButton;
     private final TimeModel time;
-    private List<TransacaoModel> transacaoList=new ArrayList<>();
+    private List<TransacaoModel> transacaoList;
     private List<JogadorModel> jogadoresPesquisa = new ArrayList<>();
     private JogadorModel jogadorDesejado;
 
@@ -54,7 +54,14 @@ public class AppFrame extends JFrame {
 
         time = getInformacoes(idTime, client);
         try {
-            transacaoList = client.BuscaListaDeTransacoes(idTime);
+
+            transacaoList = new ArrayList<>();
+            for(TransacaoModel t: client.BuscaListaDeTransacoes(idTime)){
+                if(t.isTransacaoFinalizada()==false){
+                    transacaoList.add(t);
+                }
+            }
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -91,6 +98,7 @@ public class AppFrame extends JFrame {
                     TransacaoModel tr = transacaoList.get(index);
                     dispose();
                     InfosTransacao info = new InfosTransacao(idTime, tr.getTransacaoId(), client);
+
                 }
             }
         });
@@ -118,7 +126,8 @@ public class AppFrame extends JFrame {
 
             List<JogadorModel> jogadores;
             try {
-                jogadores = client.BuscaJogadoresPeloNome(posicaoPesquisada.toUpperCase());
+                jogadores = client.BuscaJogadorPelaPosicao(posicaoPesquisada.toUpperCase());
+                System.out.println(posicaoPesquisada.toUpperCase());
             } catch (IOException ex) {
                 throw new RuntimeException(ex);
             }
@@ -138,6 +147,11 @@ public class AppFrame extends JFrame {
                     fazerPropostaButton.setEnabled(true);
                     int i = list.locationToIndex(e.getPoint());
                     jogadorDesejado = jogadoresPesquisa.get(i);
+
+                    System.out.println(jogadorDesejado.getTime().getTimeId());
+                    System.out.println(jogadorDesejado.getJogadorId());
+                    System.out.println(jogadorDesejado.getNomeJogador());
+
                 }
             }
         });
@@ -162,16 +176,28 @@ public class AppFrame extends JFrame {
 
                 if(result == JOptionPane.OK_OPTION){
                     JogadorModel jogadorProposto = time.getJogadores().get(comboBox.getSelectedIndex());
-                    try {
-                        TransacaoModel t = client.CadastroTransacao(idTime, jogadorDesejado.getTime().getTimeId(), jogadorProposto.getJogadorId(), jogadorDesejado.getTime().getTimeId());
-                        if(t != null){
+
+                    System.out.println(jogadorProposto.getNomeJogador());
+                    System.out.println(jogadorProposto.getTime().getTimeId());
+                    System.out.println(jogadorProposto.getJogadorId());
+
+                    try
+                    {
+                        TransacaoModel t = client.CadastroTransacao(jogadorProposto.getTime().getTimeId(),
+                                jogadorDesejado.getTime().getTimeId(),
+                                jogadorProposto.getJogadorId(), jogadorDesejado.getJogadorId());
+                        if(t==null)
+                        {
+                            JOptionPane.showMessageDialog(null, "Transação não registrada");
+                        }
+                        else
+                        {
                             JOptionPane.showMessageDialog(null, "Transação Registrada");
                             dispose();
                             AppFrame app = new AppFrame(idTime, new EscamballService());
-                        }else{
-                            JOptionPane.showMessageDialog(null, "Transação não registrada");
                         }
-                    } catch (IOException ex) {
+                    }
+                    catch (IOException ex) {
                         throw new RuntimeException(ex);
                     }
                 }
@@ -290,17 +316,18 @@ public class AppFrame extends JFrame {
                 }catch(IOException ex){
                     throw new RuntimeException(ex);
                 }
-
-                modelPropostas.addElement(
-                        "<html>" +
-                                "<center>" +
-                                "Proposta recebida" +
-                                "<br />Jogador de interesse da outra equipe: <b>" + jogadorDesejadoOutroTime.getNomeJogador() + "</b>" +
-                                "<br />Jogador oferecido: <b>" + jogadorOferecidoOutroTime.getNomeJogador() + "</b>" +
-                                "<hr>" +
-                                "</center>" +
-                                "</html>"
-                );
+                if((tr.isTransacaoFinalizada()==false)){
+                    modelPropostas.addElement(
+                            "<html>" +
+                                    "<center>" +
+                                    "Proposta recebida" +
+                                    "<br />Jogador de interesse da outra equipe: <b>" + jogadorDesejadoOutroTime.getNomeJogador() + "</b>" +
+                                    "<br />Jogador oferecido: <b>" + jogadorOferecidoOutroTime.getNomeJogador() + "</b>" +
+                                    "<hr>" +
+                                    "</center>" +
+                                    "</html>"
+                    );
+                }
             }
         }
         ofertasList.setModel(modelPropostas);
