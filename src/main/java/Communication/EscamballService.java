@@ -1,357 +1,302 @@
 package main.java.Communication;
 
-import main.java.Controllers.Persistencia;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import main.java.Models.*;
-import main.java.generated.*;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.util.EntityUtils;
 
-import io.grpc.stub.StreamObserver;
-
-import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
 
-public class EscamballService extends escamballGrpc.escamballImplBase{
+public class EscamballService
+{
 
-    private final Persistencia persistencia;
+    private final String baseUrl = "http://localhost:8080/api/";
+    private final String timeController = "Time/";
+    private final String jogadorController = "Jogador/";
+    private final String transacaoController = "Transacao/";
+    public EscamballService() {    }
 
-    public EscamballService(Persistencia persistencia) {
-        this.persistencia = persistencia;
-    }
-    @Override
-    public void cadastro(CadastroRequest request, StreamObserver<APIResponse> responseObserver) {
-        String nomeDono = request.getNomeDono();
-        String nomeTime = request.getNomeTime();
-        String login = request.getLogin();
-        String senha = request.getSenha();
-        APIResponse.Builder response = APIResponse.newBuilder();
+    public TimeModel CadastroTime(String nomeDono, String nomeTime, String login, String senha) throws IOException {
+        TimeModel t = new TimeModel();
+        t.setNomeTime(nomeTime); t.setNomeDono(nomeDono);
+        t.setLogin(login); t.setSenha(senha);
 
-        TimeModel t = new TimeModel(nomeDono,nomeTime,login,senha);
-        int idTime = persistencia.inserirTime(t);
+        String URL = baseUrl+timeController+"InsereTime";
+        Gson gson = new Gson();
 
-        if(idTime != -1 && idTime != 0){
-            response.setResponseMessage("Time criado. Id: "+idTime).setResponseCode(200).setIdCadastrado(idTime);
-        }else{
-            response.setResponseMessage("Falha ao inserir o time").setResponseCode(400);
-        }
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
-    }
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(URL);
 
-    @Override
-    public void cadastroJogador(CadastroJogadorRequest request, StreamObserver<APIResponse> responseObserver) {
-        String nomeJogador = request.getNomeJogador();
-        int idadeJogador = request.getIdadeJogador();
-        long precoJogador = request.getPreco();
-        Posicao posicaoJogador = request.getPosicao();
-        Pontuacao pontuacaoJogador = request.getPontuacao();
-        int idTime = request.getIdTime();
-        APIResponse.Builder response = APIResponse.newBuilder();
+        StringEntity postingString = new StringEntity(gson.toJson(t));
+        post.setEntity(postingString);
+        post.setHeader("Content-type", "application/json");
 
-        if(idTime == 0 || idTime == -1){
-            response.setResponseMessage("Erro ao inserir jogador, id do time invalido!").setResponseCode(400).setIdCadastrado(0);
-            responseObserver.onNext(response.build());
-            responseObserver.onCompleted();
-            return;
-        }
+        HttpResponse response = httpClient.execute(post);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
 
-        PosicaoModel posicaoModel = new PosicaoModel(posicaoJogador.getGoleiro(), posicaoJogador.getDefensor(), posicaoJogador.getMeia(), posicaoJogador.getAtacante());
-        PontuacaoModel pontuacaoModel = new PontuacaoModel(pontuacaoJogador.getAtaque(), pontuacaoJogador.getDefesa(), pontuacaoJogador.getFisico());
-        JogadorModel jogadorModel = new JogadorModel(idTime, nomeJogador, idadeJogador, posicaoModel, precoJogador, pontuacaoModel);
+        Gson retornoGson = new Gson();
+        TimeModel retorno = retornoGson.fromJson(result, TimeModel.class);
 
-        int idJogador = persistencia.inserirJogador(jogadorModel);
-
-        if(idJogador != 0 && idJogador != -1){
-            response.setResponseMessage("Jogador inserido com sucesso! Id: "+idJogador).setResponseCode(200).setIdCadastrado(idJogador);
-        }else{
-            response.setResponseMessage("Falha ao inserir jogador!").setResponseCode(400);
-        }
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        return retorno;
     }
 
-    @Override
-    public void novaTransacao(TransacaoRequest request, StreamObserver<APIResponse> responseObserver) {
-        int idTimeProposta = request.getIdTimeProposta();
-        int idTimeReceptor = request.getIdTimeReceptor();
-        int idJogadorProposto = request.getIdJogadorProposto();
-        int idJogadorDesejado = request.getIdJogadorDesejado();
+    public JogadorModel CadastroJogador(String nomeJogador, int idadeJogador, long precoJogador, int ataque, int defesa, int fisico, String posicao, int timeId) throws IOException
+    {
+        JogadorLightModel jogadorLightModel = new JogadorLightModel();
+        jogadorLightModel.setNomeJogador(nomeJogador); jogadorLightModel.setIdadeJogador(idadeJogador);
+        jogadorLightModel.setPrecoJogador(precoJogador); jogadorLightModel.setAtaque(ataque);
+        jogadorLightModel.setDefesa(defesa); jogadorLightModel.setFisico(fisico);
+        jogadorLightModel.setPosicao(posicao); jogadorLightModel.setTimeId(timeId);
 
-        APIResponse.Builder response = APIResponse.newBuilder();
+        String URL = baseUrl+jogadorController+"InsereJogador";
+        Gson gson = new Gson();
 
-        JogadorModel jogadorProposto = persistencia.recuperarJogador(idJogadorProposto);
-        JogadorModel jogadorDesejado = persistencia.recuperarJogador(idJogadorDesejado);
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(URL);
 
-        TransacaoModel transacaoModel = new TransacaoModel(idTimeProposta,idTimeReceptor,jogadorProposto,jogadorDesejado);
+        StringEntity postingString = new StringEntity(gson.toJson(jogadorLightModel));
+        post.setEntity(postingString);
+        post.setHeader("Content-type", "application/json");
 
-        int idTransacao = persistencia.inserirTransacao(transacaoModel);
+        HttpResponse response = httpClient.execute(post);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
 
-        if(idTransacao != 0 && idTransacao != -1){
-            response.setResponseMessage("Transacao inserido com sucesso! Id: "+idTransacao).setResponseCode(200).setIdCadastrado(idTransacao);
+        Gson retornoGson = new Gson();
+        JogadorModel retorno = retornoGson.fromJson(result, JogadorModel.class);
+
+        return retorno;
+    }
+
+    public TransacaoModel CadastroTransacao(int idTimeProposta, int idTimeReceptor, int idJogadorOferecido, int idJogadorDesejado) throws IOException
+    {
+
+        TransacaoModel t = new TransacaoModel();
+        t.setTimePropostaId(idTimeProposta); t.setTimeReceptorId(idTimeReceptor);
+        t.setJogadorOferecidoId(idJogadorOferecido); t.setJogadorDesejadoId(idJogadorDesejado);
+
+        String URL = baseUrl+transacaoController+"InsereTransacao";
+        Gson gson = new Gson();
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(URL);
+
+        StringEntity postingString = new StringEntity(gson.toJson(t));
+        post.setEntity(postingString);
+        post.setHeader("Content-type", "application/json");
+
+        HttpResponse response = httpClient.execute(post);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        TransacaoModel retorno = retornoGson.fromJson(result, TransacaoModel.class);
+
+        return retorno;
+    }
+
+    public TransacaoModel RespostaTransacao(int idTransacao, boolean aceite) throws IOException
+    {
+        TransacaoLightModel t = new TransacaoLightModel(idTransacao);
+        String URL ="";
+        if(aceite){
+            URL = baseUrl+transacaoController+"AceitaTransacao";
         }
         else{
-            response.setResponseMessage("Falha ao inserir transacao!").setResponseCode(400);
-        }
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
-    }
-
-    @Override
-    public void responderTransacao(RespostaTransacaoRequest request, StreamObserver<APIResponse> responseObserver) {
-        int idTransacao = request.getIdTransacao();
-        boolean aceite = request.getAceite();
-
-        APIResponse.Builder response = APIResponse.newBuilder();
-
-        TransacaoModel transacaoModel = persistencia.recuperarTransacao(idTransacao);
-
-        if(transacaoModel==null){
-            response.setResponseMessage("Transacao nao encontrada!").setResponseCode(404);
-        } else if (transacaoModel.isFinalizada()) {
-            response.setResponseMessage("Transacao ja finalizada!").setResponseCode(400);
-        } else{
-            transacaoModel.setAceita(aceite);
-            boolean resposta = persistencia.alterarTransacao(transacaoModel);
-            if(resposta){
-                response.setResponseMessage("Transacao respondida com sucesso!").setResponseCode(200);
-            }else{
-                response.setResponseMessage("Falha ao responder transacao!").setResponseCode(400);
-            }
+            URL = baseUrl+transacaoController+"RecusaTransacao";
         }
 
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
-    }
+        Gson gson = new Gson();
 
-    @Override
-    public void login(LoginRequest request, StreamObserver<TimeResponse> responseObserver) {
-        String username = request.getUsername();
-        String password = request.getPassword();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPut put = new HttpPut(URL);
 
-        TimeResponse.Builder response = TimeResponse.newBuilder();
+        StringEntity postingString = new StringEntity(gson.toJson(t));
+        put.setEntity(postingString);
+        put.setHeader("Content-type", "application/json");
 
-        LoginModel loginModel = new LoginModel(username, password);
-        TimeModel timeModel;
-        try {
-            timeModel = persistencia.recuperarTimePorLogin(username);
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
+        HttpResponse response = httpClient.execute(put);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
 
-        CadastroRequest cadastroRequest = CadastroRequest.newBuilder().setNomeDono(timeModel.getNomeDono()).setNomeTime(timeModel.getNomeTime()).setLogin(timeModel.getLogin()).setSenha(password).build();
+        Gson retornoGson = new Gson();
+        TransacaoModel retorno = retornoGson.fromJson(result, TransacaoModel.class);
 
-        Time time = Time.newBuilder().setTime(cadastroRequest).setIdTime(timeModel.getIdTime()).build();
-
-        if(timeModel.getSenha().equals(loginModel.getPassword())){
-            response.setTime(time).setResponseMessage("Equipe Encontrada com sucesso");
-        }else{
-            response.setResponseMessage("Equipe nao encontrada");
-        }
-
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        return retorno;
 
     }
 
-    @Override
-    public void recuperaTimePeloId(PesquisaPorIdTimeRequest request, StreamObserver<TimeResponse> responseObserver) {
-        int idTime = request.getIdTime();
-        TimeResponse.Builder response = TimeResponse.newBuilder();
+    public TransacaoModel RecuperaTransacaoPeloId(int idTransacao) throws IOException
+    {
+        String URL = baseUrl+transacaoController+"GetTransacaoPorId/"+idTransacao;
+        Gson gson = new Gson();
 
-        TimeModel timeModel = persistencia.recuperarTime(idTime);
-        if(timeModel.getNomeTime().isEmpty()){
-            response.setResponseMessage("Equipe nao encontrada");
-        }
-        else{
-            CadastroRequest timeEncontrado = CadastroRequest.newBuilder().
-                    setNomeTime(timeModel.getNomeTime()).
-                    setNomeDono(timeModel.getNomeDono()).
-                    //Nao podemos passar o login e a senha nesse caso
-                    //para que quem tenha o id não consiga essas informacoes
-                    setLogin("").
-                    setSenha("").
-                    build();
-            Time time = Time.newBuilder().
-                    setTime(timeEncontrado).
-                    setIdTime(idTime).
-                    build();
-            response.setTime(time).setResponseMessage("Equipe Encontrada com sucesso");
-        }
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
 
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        get.setHeader("Content-type", "application/json");
+
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        TransacaoModel retorno = retornoGson.fromJson(result, TransacaoModel.class);
+
+        return retorno;
     }
 
-    @Override
-    public void recuperaJogadorPeloId(PesquisaPorIdJogadorRequest request, StreamObserver<JogadorResponse> responseObserver) {
-        int idJogador = request.getIdJogador();
-        JogadorResponse.Builder response = JogadorResponse.newBuilder();
+    public TimeModel RealizaLogin(String username, String password) throws IOException
+    {
+        LoginLightModel loginLightModel = new LoginLightModel(username, password);
 
-        JogadorModel jogadorModel = persistencia.recuperarJogador(idJogador);
+        String URL = baseUrl+timeController+"ConfereLogin";
+        Gson gson = new Gson();
 
-        if(jogadorModel == null){
-            response.setResponseMessage("Jogador não encontrado");
-        }
-        else{
-            Jogador jogador = ConstroiJogador(jogadorModel);
-            response.setResponseMessage("Jogador encontrado").setJogador(jogador);
-        }
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpPost post = new HttpPost(URL);
 
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        StringEntity postingString = new StringEntity(gson.toJson(loginLightModel));
+        post.setEntity(postingString);
+        post.setHeader("Content-type", "application/json");
+
+        HttpResponse response = httpClient.execute(post);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        TimeModel retorno = retornoGson.fromJson(result, TimeModel.class);
+
+        return retorno;
     }
 
+    public TimeModel BuscaTimePeloId(int timeId) throws IOException
+    {
+        String URL = baseUrl+timeController+"GetTimePorId/"+timeId;
+        Gson gson = new Gson();
 
-    @Override
-    public void recuperaTransacaoPeloId(PesquisaPorIdTransacaoRequest request, StreamObserver<TransacaoResponse> responseObserver) {
-        int idTransacao = request.getIdTransacao();
-        TransacaoResponse.Builder response = TransacaoResponse.newBuilder();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
 
-        TransacaoModel transacao = persistencia.recuperarTransacao(idTransacao);
+        get.setHeader("Content-type", "application/json");
 
-        if(transacao == null){
-            response.setResponseMessage("Transacao nao encontrada");
-        }
-        else{
-            Jogador jogadorProposto = ConstroiJogador(transacao.getJogadorProposto());
-            Jogador jogadorDesejado = ConstroiJogador(transacao.getJogadorDesejado());
-            TransacaoJogador transacaoJogador = TransacaoJogador.newBuilder().
-                    setIdTransacao(transacao.getIdTransacao()).
-                    setIdTimeProposto(transacao.getIdTimeProposta()).
-                    setIdTimeReceptor(transacao.getIdTimeReceptor()).
-                    setJogadorProposto(jogadorProposto).
-                    setJogadorDesejado(jogadorDesejado).
-                    build();
-            response.setResponseMessage("Transacao encontrada").setTransacao(transacaoJogador);
-        }
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
 
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        Gson retornoGson = new Gson();
+        TimeModel retorno = retornoGson.fromJson(result, TimeModel.class);
+
+        return retorno;
     }
 
-    @Override
-    public void buscaJogadoresNome(BuscaJogadoresRequest request, StreamObserver<ListaJogadoresResponse> responseObserver) {
-        String nomeJogador = request.getNomeJogador();
+    public JogadorModel BuscaJogadorPeloId(int jogadorId) throws IOException
+    {
+        String URL = baseUrl+jogadorController+"JogadorPorId/"+jogadorId;
+        Gson gson = new Gson();
 
-        ListaJogadoresResponse.Builder response = ListaJogadoresResponse.newBuilder();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
 
-        List<JogadorModel> jogadorModelList = persistencia.recuperarJogadorPeloNome(nomeJogador);
-        if(jogadorModelList.isEmpty()){
-            response.setResponseMessage("Nenhum jogador encontrado");
-        }
-        else{
-            List<Jogador> jogadorList = new ArrayList<>(jogadorModelList.size());
-            for(JogadorModel j: jogadorModelList){
-                Jogador jogador = ConstroiJogador(j);
-                jogadorList.add(jogador);
-            }
-            response.setResponseMessage("Lista de Jogadores").addAllJogadores(jogadorList);
-        }
+        get.setHeader("Content-type", "application/json");
 
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        JogadorModel retorno = retornoGson.fromJson(result, JogadorModel.class);
+
+        return retorno;
     }
 
-    @Override
-    public void buscaJogadoresPosicao(BuscaJogadoresPosicaoRequest request, StreamObserver<ListaJogadoresResponse> responseObserver) {
-        Posicao posicao = request.getPosicao();
+    public List<JogadorModel> BuscaJogadoresPeloNome(String nome) throws IOException
+    {
+        String URL = baseUrl+jogadorController+"JogadoresPorNome/"+nome;
+        Gson gson = new Gson();
 
-        ListaJogadoresResponse.Builder response = ListaJogadoresResponse.newBuilder();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
 
-        String posicaoString = posicao.getGoleiro() ?
-                "GOLEIRO": posicao.getDefensor() ?
-                "DEFENSOR" : posicao.getMeia() ?
-                "MEIA": posicao.getAtacante() ?
-                "ATACANTE" : "";
+        get.setHeader("Content-type", "application/json");
 
-        List<JogadorModel> jogadorModelList = persistencia.recuperarJogadorPelaPosicao(posicaoString);
-        if(jogadorModelList == null){
-            response.setResponseMessage("Nenhum jogador encontrado");
-        }else{
-            List<Jogador> jogadorList = new ArrayList<>(jogadorModelList.size());
-            for(JogadorModel j: jogadorModelList){
-                Jogador jogador = ConstroiJogador(j);
-                jogadorList.add(jogador);
-            }
-            response.setResponseMessage("Lista de Jogadores").addAllJogadores(jogadorList);
-        }
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        List<JogadorModel> retorno = retornoGson.fromJson(result, new TypeToken<List<JogadorModel>>(){}.getType());
+
+        return retorno;
     }
 
-    @Override
-    public void exibeListaJogadores(PesquisaPorIdTimeRequest request, StreamObserver<ListaJogadoresResponse> responseObserver) {
-        int idTime = request.getIdTime();
-        ListaJogadoresResponse.Builder response = ListaJogadoresResponse.newBuilder();
+    public List<JogadorModel> BuscaJogadorPelaPosicao(String posicao) throws IOException
+    {
+        String URL = baseUrl+jogadorController+"JogadoresPorPosicao/"+posicao;
+        Gson gson = new Gson();
 
-        TimeModel t = persistencia.recuperarTime(idTime);
-        if(t==null){
-            response.setResponseMessage("Time nao encontrado");
-        }
-        else{
-            persistencia.recuperarElenco(t);
-            List<Jogador> jogadorList = new ArrayList<>(t.getElenco().size());
-            for(JogadorModel j: t.getElenco()){
-                Jogador jogador = ConstroiJogador(j);
-                jogadorList.add(jogador);
-            }
-            response.setResponseMessage("Lista de Jogadores").addAllJogadores(jogadorList);
-        }
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
 
+        get.setHeader("Content-type", "application/json");
 
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
 
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+        Gson retornoGson = new Gson();
+        List<JogadorModel> retorno = retornoGson.fromJson(result, new TypeToken<List<JogadorModel>>(){}.getType());
+
+        return retorno;
     }
 
-    @Override
-    public void historicoTransacoes(PesquisaPorIdTimeRequest request, StreamObserver<ListaTransacaoResponse> responseObserver) {
-        int idTime = request.getIdTime();
-        ListaTransacaoResponse.Builder response = ListaTransacaoResponse.newBuilder();
-        TimeModel timeModel = persistencia.recuperarTime(idTime);
-        if(timeModel.getNomeTime().isEmpty()){
-            response.setResponseMessage("Erro! Time nao encontrado!");
-            responseObserver.onNext(response.build());
-            responseObserver.onCompleted();
-            return;
-        }
-        List<TransacaoModel> transacaoModelList = persistencia.historicoTransacoes(timeModel);
-        if(transacaoModelList.isEmpty()){
-            response.setResponseMessage("Nenhuma transacao encontrada!");
-            responseObserver.onNext(response.build());
-            responseObserver.onCompleted();
-            return;
-        }
-        List<TransacaoJogador> transacaoList = new ArrayList<>(transacaoModelList.size());
-        for (TransacaoModel model: transacaoModelList) {
-            Jogador jogadorProposto = ConstroiJogador(model.getJogadorProposto());
-            Jogador jogadorDesejado = ConstroiJogador(model.getJogadorDesejado());
-            TransacaoJogador transacaoJogador = TransacaoJogador.newBuilder().
-                    setIdTransacao(model.getIdTransacao()).
-                    setIdTimeProposto(model.getIdTimeProposta()).
-                    setIdTimeReceptor(model.getIdTimeReceptor()).
-                    setJogadorProposto(jogadorProposto).
-                    setJogadorDesejado(jogadorDesejado).
-                    build();
-            transacaoList.add(transacaoJogador);
-        }
-        response.setResponseMessage("Lista de transacoes").addAllTransacoes(transacaoList);
-        responseObserver.onNext(response.build());
-        responseObserver.onCompleted();
+    public List<JogadorModel> ListaDeJogadoresTime(int timeId) throws IOException
+    {
+        String URL = baseUrl+jogadorController+"JogadoresPorIdTime/"+timeId;
+        Gson gson = new Gson();
+
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
+
+        get.setHeader("Content-type", "application/json");
+
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        List<JogadorModel> retorno = retornoGson.fromJson(result, new TypeToken<List<JogadorModel>>(){}.getType());
+
+        return retorno;
     }
 
-    private Jogador ConstroiJogador(JogadorModel j){
-        Posicao pos = Posicao.newBuilder().setGoleiro(j.getPosicao().isGoleiro()).setDefensor(j.getPosicao().isZagueiro()).setMeia(j.getPosicao().isMeioCampista()).setAtacante(j.getPosicao().isAtacante()).build();
-        Pontuacao pon = Pontuacao.newBuilder().setAtaque(j.getPontos().getAtaque()).setDefesa(j.getPontos().getDefesa()).setFisico(j.getPontos().getFisico()).build();
+    public List<TransacaoModel> BuscaListaDeTransacoes(int timeId) throws IOException
+    {
+        String URL = baseUrl+transacaoController+"GetTransacoesPorTimeId/"+timeId;
+        Gson gson = new Gson();
 
-        CadastroJogadorRequest jog = CadastroJogadorRequest.newBuilder().
-                setIdTime(j.getIdTime()).
-                setNomeJogador(j.getNome()).
-                setIdadeJogador(j.getIdade()).
-                setPosicao(pos).
-                setPreco(j.getPreco()).
-                setPontuacao(pon).
-                build();
+        CloseableHttpClient httpClient = HttpClientBuilder.create().build();
+        HttpGet get = new HttpGet(URL);
 
-        return Jogador.newBuilder().setIdJogador(j.getIdJogador()).setJogador(jog).build();
+        get.setHeader("Content-type", "application/json");
+
+        HttpResponse response = httpClient.execute(get);
+        HttpEntity entity = response.getEntity();
+        String result = EntityUtils.toString(entity);
+
+        Gson retornoGson = new Gson();
+        List<TransacaoModel> retorno = retornoGson.fromJson(result, new TypeToken<List<TransacaoModel>>(){}.getType());
+
+        return retorno;
     }
 }

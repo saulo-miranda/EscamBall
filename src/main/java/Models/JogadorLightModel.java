@@ -1,28 +1,16 @@
 package main.java.Models;
 
-public class JogadorModel {
-    private int jogadorId;
+public class JogadorLightModel {
     private String nomeJogador;
     private int idadeJogador;
     private long precoJogador;
-    //Pontuacao
     private int ataque;
     private int defesa;
     private int fisico;
-    private int geral;
-    //Posicao
     private String posicao;
-    private TimeModel time;
+    private int timeId;
 
-    public JogadorModel() { }
-
-    public int getJogadorId() {
-        return jogadorId;
-    }
-
-    public void setJogadorId(int jogadorId) {
-        this.jogadorId = jogadorId;
-    }
+    public JogadorLightModel() {  }
 
     public String getNomeJogador() {
         return nomeJogador;
@@ -72,14 +60,6 @@ public class JogadorModel {
         this.fisico = fisico;
     }
 
-    public int getGeral() {
-        return geral;
-    }
-
-    public void setGeral(int geral) {
-        this.geral = (ataque+defesa+fisico)/3;
-    }
-
     public String getPosicao() {
         return posicao;
     }
@@ -88,11 +68,11 @@ public class JogadorModel {
         this.posicao = posicao;
     }
 
-    public TimeModel getTime() {
-        return time;
+    public int getTimeId() {
+        return timeId;
     }
 
-    public void setTime(TimeModel time) {
-        this.time = time;
+    public void setTimeId(int timeId) {
+        this.timeId = timeId;
     }
 }

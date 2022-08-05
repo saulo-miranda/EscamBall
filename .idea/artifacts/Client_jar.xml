@@ -27,7 +27,6 @@
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/protobuf-java-3.21.2.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/grpc-stub-1.29.0.jar" path-in-jar="/" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/javax.annotation-api-1.3.2.jar" path-in-jar="/" />
-      <element id="library" level="project" name="google.code.gson" />
       <element id="extracted-dir" path="$PROJECT_DIR$/lib/error_prone_annotations-2.3.3.jar" path-in-jar="/" />
     </root>
   </artifact>

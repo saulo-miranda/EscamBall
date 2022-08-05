@@ -1,82 +1,69 @@
 package main.java.Models;
 
 public class TransacaoModel {
-    private int IdTransacao;
-    private int idTimeProposta;
-    private int idTimeReceptor;
-    private JogadorModel jogadorProposto;
-    private JogadorModel jogadorDesejado;
-    private boolean Aceita;
-    private boolean Finalizada;
+    private int transacaoId;
+    private int timePropostaId;
+    private int timeReceptorId;
+    private int jogadorOferecidoId;
+    private int jogadorDesejadoId;
+    private boolean transacaoAceita;
+    private boolean transacaoFinalizada;
 
-    public TransacaoModel(int idTimeProposta, int idTimeReceptor, JogadorModel jogadorProposto, JogadorModel jogadorDesejado) {
-        this.idTimeProposta = idTimeProposta;
-        this.idTimeReceptor = idTimeReceptor;
-        this.jogadorProposto = jogadorProposto;
-        this.jogadorDesejado = jogadorDesejado;
-        this.Aceita = false;
-        this.Finalizada = false;
+    public TransacaoModel() {}
+
+    public int getTransacaoId() {
+        return transacaoId;
     }
 
-    //Getters
-
-
-    public int getIdTransacao() {
-        return IdTransacao;
+    public void setTransacaoId(int transacaoId) {
+        this.transacaoId = transacaoId;
     }
 
-    public int getIdTimeProposta() {
-        return idTimeProposta;
+    public int getTimePropostaId() {
+        return timePropostaId;
     }
 
-    public int getIdTimeReceptor() {
-        return idTimeReceptor;
+    public void setTimePropostaId(int timePropostaId) {
+        this.timePropostaId = timePropostaId;
     }
 
-    public JogadorModel getJogadorProposto() {
-        return jogadorProposto;
+    public int getTimeReceptorId() {
+        return timeReceptorId;
     }
 
-    public JogadorModel getJogadorDesejado() {
-        return jogadorDesejado;
+    public void setTimeReceptorId(int timeReceptorId) {
+        this.timeReceptorId = timeReceptorId;
     }
 
-    public boolean isAceita() {
-        return Aceita;
+    public int getJogadorOferecidoId() {
+        return jogadorOferecidoId;
     }
 
-    public boolean isFinalizada() {
-        return Finalizada;
+    public void setJogadorOferecidoId(int jogadorOferecidoId) {
+        this.jogadorOferecidoId = jogadorOferecidoId;
     }
 
-    //Setters
-
-
-    public void setIdTransacao(int idTransacao) {
-        IdTransacao = idTransacao;
+    public int getJogadorDesejadoId() {
+        return jogadorDesejadoId;
     }
 
-    public void setIdTimeProposta(int idTimeProposta) {
-        this.idTimeProposta = idTimeProposta;
+    public void setJogadorDesejadoId(int jogadorDesejadoId) {
+        this.jogadorDesejadoId = jogadorDesejadoId;
     }
 
-    public void setIdTimeReceptor(int idTimeReceptor) {
-        this.idTimeReceptor = idTimeReceptor;
+    public boolean isTransacaoAceita() {
+        return transacaoAceita;
     }
 
-    public void setJogadorProposto(JogadorModel jogadorProposto) {
-        this.jogadorProposto = jogadorProposto;
+    public void setTransacaoAceita(boolean transacaoAceita) {
+        this.transacaoAceita = transacaoAceita;
     }
 
-    public void setJogadorDesejado(JogadorModel jogadorDesejado) {
-        this.jogadorDesejado = jogadorDesejado;
+    public boolean isTransacaoFinalizada() {
+        return transacaoFinalizada;
     }
 
-    public void setAceita(boolean aceita) {
-        Aceita = aceita;
-    }
-
-    public void setFinalizada(boolean finalizada) {
-        Finalizada = finalizada;
+    public void setTransacaoFinalizada(boolean transacaoFinalizada) {
+        this.transacaoFinalizada = transacaoFinalizada;
     }
 }
